@@ -1,3059 +1,714 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Wishly — Create beautiful personalized celebration experiences.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Wishly — Make Moments Unforgettable</title>
-
 <style>
-:root{
-  --ink:#402d3a;
-  --muted:#8d7484;
-  --cream:#fffafc;
-  --cream2:#fff3f7;
-  --pink:#f38db5;
-  --pink2:#ffbfd8;
-  --purple:#b9a4f5;
-  --lav:#eee8ff;
-  --green:#a9d6bc;
-  --gold:#f2cf8d;
-  --shadow:0 18px 60px rgba(78,47,70,.12);
-}
-
+:root{--ink:#4a3341;--muted:#957f8c;--bg:#fff9fc;--pink:#ef91b5;--lav:#b9a7ee;--line:rgba(74,51,65,.1);--shadow:0 20px 60px rgba(82,53,70,.12)}
 *{box-sizing:border-box;margin:0;padding:0}
-
-html{
-  scroll-behavior:smooth;
-}
-
-body{
-  min-height:100vh;
-  color:var(--ink);
-  font-family:
-    Inter,
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-  background:
-    radial-gradient(circle at 10% 10%,#ffe4ef 0,transparent 28%),
-    radial-gradient(circle at 90% 16%,#eee8ff 0,transparent 30%),
-    linear-gradient(180deg,#fffafd,#fff7fb 55%,#fffdfb);
-  overflow-x:hidden;
-}
-
-/* =========================
-   GLOBAL FLOATING AMBIENCE
-========================= */
-
-.ambient{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  overflow:hidden;
-  z-index:-5;
-}
-
-.blob{
-  position:absolute;
-  border-radius:50%;
-  filter:blur(65px);
-  opacity:.32;
-  animation:blobMove 14s ease-in-out infinite alternate;
-}
-
-.blob.a{
-  width:260px;
-  height:260px;
-  background:#ffd4e6;
-  left:-80px;
-  top:70px;
-}
-
-.blob.b{
-  width:300px;
-  height:300px;
-  background:#e6dcff;
-  right:-100px;
-  top:35%;
-  animation-duration:18s;
-}
-
-.blob.c{
-  width:210px;
-  height:210px;
-  background:#dcf1e5;
-  left:40%;
-  bottom:-80px;
-  animation-duration:20s;
-}
-
-@keyframes blobMove{
-  0%{transform:translate(0,0) scale(1)}
-  50%{transform:translate(35px,-25px) scale(1.08)}
-  100%{transform:translate(-25px,40px) scale(.94)}
-}
-
-.float{
-  position:fixed;
-  pointer-events:none;
-  user-select:none;
-  opacity:.35;
-  animation:floatUp var(--dur) ease-in-out infinite;
-  animation-delay:var(--delay);
-  z-index:-1;
-}
-
-@keyframes floatUp{
-  0%{
-    transform:translate3d(0,120px,0) rotate(0);
-    opacity:0;
-  }
-  18%{opacity:.35}
-  55%{
-    transform:translate3d(var(--x),-80px,0) rotate(8deg);
-    opacity:.6;
-  }
-  100%{
-    transform:translate3d(calc(var(--x) * -1),-350px,0) rotate(-10deg);
-    opacity:0;
-  }
-}
-
-/* =========================
-   LAYOUT
-========================= */
-
-.container{
-  width:min(1180px,92%);
-  margin:auto;
-}
-
-/* =========================
-   NAV
-========================= */
-
-.nav{
-  height:78px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border-bottom:1px solid rgba(64,45,58,.08);
-}
-
-.logo{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:23px;
-  font-weight:950;
-  letter-spacing:-1px;
-}
-
-.logoMark{
-  width:38px;
-  height:38px;
-  display:grid;
-  place-items:center;
-  border-radius:13px;
-  background:linear-gradient(135deg,#f59abb,#baa5ef);
-  color:white;
-  box-shadow:0 10px 25px rgba(243,141,181,.25);
-}
-
-.logo span{
-  color:#e47da8;
-}
-
-.nav-actions{
-  display:flex;
-  gap:9px;
-}
-
-.btn{
-  border:0;
-  border-radius:14px;
-  padding:12px 18px;
-  font-weight:800;
-  transition:.28s ease;
-}
-
-.btn:hover{
-  transform:translateY(-2px);
-}
-
-.primary{
-  color:white;
-  background:linear-gradient(135deg,#f18ab2,#b9a3ee);
-  box-shadow:0 12px 30px rgba(226,131,173,.22);
-}
-
-.secondary{
-  color:var(--ink);
-  background:rgba(255,255,255,.72);
-  border:1px solid rgba(64,45,58,.10);
-}
-
-.soft{
-  color:#8b5e73;
-  background:#fff0f5;
-  border:1px solid #ffd6e6;
-}
-
-/* =========================
-   HOME
-========================= */
-
-.hero{
-  text-align:center;
-  padding:95px 0 60px;
-}
-
-.badge{
-  display:inline-flex;
-  align-items:center;
-  gap:7px;
-  padding:8px 14px;
-  border-radius:999px;
-  border:1px solid #f0dbe4;
-  background:rgba(255,255,255,.68);
-  color:#9d6f83;
-  font-size:13px;
-  box-shadow:0 8px 30px rgba(100,50,80,.06);
-  animation:tinyFloat 5s ease-in-out infinite;
-}
-
-@keyframes tinyFloat{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-5px)}
-}
-
-.hero h1{
-  margin-top:22px;
-  font-size:clamp(47px,8vw,88px);
-  line-height:.94;
-  letter-spacing:-4px;
-  font-weight:950;
-  color:#6c4d5d;
-  animation:heroBreathe 7s ease-in-out infinite;
-}
-
-@keyframes heroBreathe{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-5px)}
-}
-
-.hero h1 span{
-  color:#df7fa8;
-}
-
-.hero p{
-  max-width:680px;
-  margin:22px auto 0;
-  color:#967d8c;
-  font-size:17px;
-  line-height:1.75;
-}
-
-.hero-actions{
-  margin-top:28px;
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-/* =========================
-   CATEGORIES
-========================= */
-
-.section{
-  margin-top:75px;
-}
-
-.sectionTitle{
-  text-align:center;
-  margin-bottom:24px;
-}
-
-.sectionTitle h2{
-  font-size:34px;
-  letter-spacing:-1px;
-}
-
-.sectionTitle p{
-  margin-top:8px;
-  color:#9b8492;
-}
-
-.categories{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
-}
-
-.category{
-  position:relative;
-  overflow:hidden;
-  min-height:182px;
-  padding:22px;
-  text-align:left;
-  border:1px solid rgba(64,45,58,.08);
-  border-radius:24px;
-  background:rgba(255,255,255,.68);
-  box-shadow:0 10px 35px rgba(80,55,70,.05);
-  transition:.35s ease;
-  color:var(--ink);
-}
-
-.category:hover{
-  transform:translateY(-7px) rotate(-.6deg);
-  box-shadow:0 18px 45px rgba(80,55,70,.10);
-}
-
-.category::after{
-  content:"";
-  position:absolute;
-  width:140px;
-  height:140px;
-  border-radius:50%;
-  right:-50px;
-  top:-55px;
-  background:#ffe4ef;
-  filter:blur(30px);
-  animation:cardGlow 6s ease-in-out infinite alternate;
-}
-
-@keyframes cardGlow{
-  from{transform:translate(0,0)}
-  to{transform:translate(-20px,26px)}
-}
-
-.category .emoji{
-  position:relative;
-  z-index:1;
-  display:inline-block;
-  font-size:35px;
-  animation:emojiDrift 4s ease-in-out infinite;
-}
-
-@keyframes emojiDrift{
-  0%,100%{transform:translateY(0) rotate(0)}
-  50%{transform:translateY(-7px) rotate(4deg)}
-}
-
-.category h3{
-  position:relative;
-  z-index:2;
-  margin-top:28px;
-  font-size:20px;
-}
-
-.category p{
-  position:relative;
-  z-index:2;
-  margin-top:6px;
-  color:#9b8492;
-  font-size:13px;
-  line-height:1.45;
-}
-
-/* =========================
-   CREATOR
-========================= */
-
-#creator{
-  display:none;
-  padding:25px 0 100px;
-}
-
-#creator.active{
-  display:block;
-  animation:pageIn .65s cubic-bezier(.2,.8,.2,1);
-}
-
-@keyframes pageIn{
-  from{
-    opacity:0;
-    transform:translateY(20px);
-    filter:blur(6px);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0);
-    filter:blur(0);
-  }
-}
-
-.creatorHeader{
-  text-align:center;
-  margin-bottom:24px;
-}
-
-.creatorHeader h2{
-  margin-top:14px;
-  font-size:40px;
-  color:#6c4d5d;
-}
-
-.creatorHeader p{
-  margin-top:8px;
-  color:#998491;
-}
-
-/* progress */
-
-.progress{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  margin-bottom:25px;
-}
-
-.dot{
-  width:38px;
-  height:38px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  background:#fff;
-  color:#9a8391;
-  border:1px solid #eddce4;
-  font-weight:800;
-  transition:.35s ease;
-}
-
-.dot.active{
-  background:linear-gradient(135deg,#f39abd,#b8a3ed);
-  color:#fff;
-  border-color:transparent;
-  box-shadow:0 0 25px rgba(235,145,181,.22);
-  transform:scale(1.08);
-}
-
-.line{
-  width:40px;
-  height:2px;
-  background:#eadde4;
-}
-
-/* creator grid */
-
-.creatorGrid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:20px;
-}
-
-.panel{
-  position:relative;
-  overflow:hidden;
-  border-radius:28px;
-  border:1px solid rgba(64,45,58,.08);
-  background:rgba(255,255,255,.68);
-  box-shadow:var(--shadow);
-}
-
-.panel::after{
-  content:"";
-  position:absolute;
-  width:200px;
-  height:200px;
-  border-radius:50%;
-  right:-100px;
-  bottom:-100px;
-  background:#efe5ff;
-  filter:blur(42px);
-  animation:panelOrb 10s ease-in-out infinite alternate;
-  pointer-events:none;
-}
-
-@keyframes panelOrb{
-  from{transform:translate(0,0)}
-  to{transform:translate(-55px,-35px)}
-}
-
-.steps{
-  overflow:hidden;
-}
-
-.track{
-  display:flex;
-  width:500%;
-  transition:transform .72s cubic-bezier(.7,0,.2,1);
-}
-
-.step{
-  width:20%;
-  flex-shrink:0;
-  padding:27px;
-  min-height:555px;
-}
-
-.step h3{
-  font-size:28px;
-  color:#6d4c5d;
-}
-
-.stepText{
-  margin-top:7px;
-  margin-bottom:22px;
-  color:#9a8392;
-  line-height:1.55;
-  font-size:14px;
-}
-
-label{
-  display:block;
-  margin-bottom:7px;
-  color:#745869;
-  font-size:13px;
-  font-weight:800;
-}
-
-input,
-textarea,
-select{
-  width:100%;
-  border:1px solid #ead9e1;
-  border-radius:14px;
-  background:#fffdfd;
-  color:#543c4b;
-  padding:13px 14px;
-  outline:none;
-  margin-bottom:17px;
-}
-
-input:focus,
-textarea:focus,
-select:focus{
-  border-color:#ef9abd;
-  box-shadow:0 0 0 3px rgba(239,154,189,.10);
-}
-
-textarea{
-  min-height:130px;
-  resize:vertical;
-  line-height:1.55;
-}
-
-.two{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-
-.photoGrid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-
-.photoBox{
-  padding:13px;
-  border:1px dashed #ead7e1;
-  background:#fffafd;
-  border-radius:18px;
-}
-
-.photoTitle{
-  font-size:12px;
-  letter-spacing:1.1px;
-  font-weight:900;
-  color:#ac6f88;
-  margin-bottom:9px;
-}
-
-.photoBox input{
-  padding:9px;
-  font-size:12px;
-  margin-bottom:10px;
-}
-
-.previewImg{
-  width:100%;
-  height:115px;
-  object-fit:cover;
-  border-radius:13px;
-  display:none;
-  margin-bottom:9px;
-}
-
-.finalPreview{
-  width:100%;
-  max-height:190px;
-  display:none;
-  object-fit:cover;
-  border-radius:16px;
-  margin-bottom:15px;
-}
-
-.stepNav{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:16px 22px;
-  border-top:1px solid rgba(64,45,58,.08);
-  background:rgba(255,255,255,.42);
-  position:relative;
-  z-index:2;
-}
-
-.right{
-  display:flex;
-  gap:8px;
-}
-
-/* =========================
-   EXTRA MAGIC
-========================= */
-
-.extraGrid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-
-.extraCard{
-  padding:15px;
-  border:1px solid #ecdde4;
-  border-radius:18px;
-  background:#fffafc;
-  color:var(--ink);
-  text-align:left;
-  transition:.28s ease;
-}
-
-.extraCard:hover{
-  transform:translateY(-3px);
-}
-
-.extraCard.selected{
-  border-color:#ee96b9;
-  background:#fff0f6;
-  box-shadow:0 8px 25px rgba(227,130,168,.10);
-}
-
-.extraEmoji{
-  font-size:30px;
-}
-
-.extraCard h4{
-  margin-top:9px;
-  font-size:16px;
-}
-
-.extraCard p{
-  margin-top:4px;
-  color:#9a8392;
-  font-size:12px;
-  line-height:1.45;
-}
-
-/* =========================
-   MUSIC
-========================= */
-
-.musicChoices{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
-}
-
-.musicCard{
-  border:1px solid #ecdce5;
-  border-radius:15px;
-  background:#fffafa;
-  color:var(--ink);
-  padding:13px;
-  text-align:left;
-  transition:.25s;
-}
-
-.musicCard.selected{
-  border-color:#ee96b9;
-  background:#fff0f6;
-}
-
-.musicCard strong{
-  font-size:14px;
-}
-
-.musicCard small{
-  display:block;
-  margin-top:4px;
-  color:#9a8392;
-}
-
-/* =========================
-   PREVIEW PHONE
-========================= */
-
-.previewPanel{
-  padding:20px;
-}
-
-.previewHeading{
-  font-weight:900;
-  font-size:20px;
-  margin-bottom:15px;
-  color:#6d4c5d;
-}
-
-.phone{
-  width:min(100%,370px);
-  min-height:610px;
-  margin:auto;
-  border-radius:34px;
-  overflow:hidden;
-  position:relative;
-  background:#fffafc;
-  box-shadow:
-    0 25px 70px rgba(80,52,69,.14),
-    inset 0 0 0 1px rgba(64,45,58,.06);
-}
-
-.phoneScene{
-  position:absolute;
-  inset:0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-  padding:32px 24px;
-  opacity:0;
-  pointer-events:none;
-  transform:translateX(45px) scale(.98);
-  filter:blur(5px);
-  transition:
-    opacity .65s ease,
-    transform .75s cubic-bezier(.2,.8,.2,1),
-    filter .65s ease;
-}
-
-.phoneScene.active{
-  opacity:1;
-  pointer-events:auto;
-  transform:translateX(0) scale(1);
-  filter:blur(0);
-}
-
-.sceneBg{
-  position:absolute;
-  inset:0;
-  overflow:hidden;
-}
-
-.sceneBlob{
-  position:absolute;
-  width:180px;
-  height:180px;
-  border-radius:50%;
-  filter:blur(38px);
-  opacity:.28;
-  animation:sceneBlob 8s ease-in-out infinite alternate;
-}
-
-.sceneBlob.one{
-  left:-70px;
-  top:-55px;
-  background:#ffd0e1;
-}
-
-.sceneBlob.two{
-  right:-70px;
-  bottom:-60px;
-  background:#e3d8ff;
-  animation-duration:10s;
-}
-
-@keyframes sceneBlob{
-  from{transform:translate(0,0) scale(1)}
-  to{transform:translate(35px,-30px) scale(1.15)}
-}
-
-.sceneContent{
-  position:relative;
-  z-index:3;
-  max-width:300px;
-}
-
-.script{
-  color:#a5677f;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  font-size:11px;
-}
-
-.sceneTitle{
-  margin-top:13px;
-  font-size:38px;
-  line-height:1.03;
-  letter-spacing:-1px;
-  color:#6c4c5c;
-}
-
-.sceneSub{
-  margin-top:13px;
-  color:#917b88;
-  font-size:14px;
-  line-height:1.6;
-}
-
-.sceneEmoji{
-  font-size:80px;
-  display:inline-block;
-  animation:sceneFloat 4s ease-in-out infinite;
-}
-
-@keyframes sceneFloat{
-  0%,100%{transform:translateY(0) rotate(0)}
-  50%{transform:translateY(-10px) rotate(3deg)}
-}
-
-.scenePhoto{
-  width:210px;
-  height:270px;
-  object-fit:cover;
-  border-radius:9px;
-  padding:8px;
-  background:white;
-  box-shadow:
-    0 18px 40px rgba(90,60,76,.16);
-  transform:rotate(-4deg);
-  animation:photoFloat 5s ease-in-out infinite;
-}
-
-@keyframes photoFloat{
-  0%,100%{transform:rotate(-4deg) translateY(0)}
-  50%{transform:rotate(2deg) translateY(-9px)}
-}
-
-.sceneCaption{
-  margin-top:15px;
-  color:#7c5d6a;
-  font-family:"Segoe UI",sans-serif;
-  font-size:14px;
-  font-style:italic;
-}
-
-.sticker{
-  position:absolute;
-  font-size:26px;
-  animation:stickerFloat 5s ease-in-out infinite;
-}
-
-.sticker.s1{left:15%;top:20%}
-.sticker.s2{right:16%;top:28%;animation-delay:1s}
-.sticker.s3{left:17%;bottom:20%;animation-delay:2s}
-.sticker.s4{right:13%;bottom:16%;animation-delay:3s}
-
-@keyframes stickerFloat{
-  0%,100%{transform:translateY(0) rotate(0)}
-  50%{transform:translateY(-12px) rotate(6deg)}
-}
-
-.catFlower{
-  font-size:95px;
-  animation:catCute 4s ease-in-out infinite;
-}
-
-@keyframes catCute{
-  0%,100%{transform:translateY(0) rotate(-1deg)}
-  50%{transform:translateY(-9px) rotate(2deg)}
-}
-
-.dancer{
-  font-size:94px;
-  animation:dance 1.1s ease-in-out infinite alternate;
-}
-
-@keyframes dance{
-  from{transform:translateY(0) rotate(-8deg)}
-  to{transform:translateY(-10px) rotate(8deg)}
-}
-
-.typeText{
-  display:inline-block;
-  min-height:74px;
-}
-
-.blurReveal{
-  animation:blurReveal 1.3s ease forwards;
-}
-
-@keyframes blurReveal{
-  from{opacity:0;filter:blur(14px);transform:scale(1.05)}
-  to{opacity:1;filter:blur(0);transform:scale(1)}
-}
-
-/* =========================
-   PREVIEW MEMORY COLLAGE
-========================= */
-
-.collage{
-  width:270px;
-  height:300px;
-  margin:auto;
-  position:relative;
-}
-
-.collage img{
-  position:absolute;
-  width:145px;
-  height:180px;
-  object-fit:cover;
-  padding:7px;
-  background:#fff;
-  border-radius:5px;
-  box-shadow:0 18px 35px rgba(90,60,76,.16);
-}
-
-.collage img:nth-child(1){
-  left:8px;
-  top:22px;
-  transform:rotate(-8deg);
-}
-
-.collage img:nth-child(2){
-  right:0;
-  top:8px;
-  transform:rotate(7deg);
-}
-
-.collage img:nth-child(3){
-  left:42px;
-  bottom:5px;
-  transform:rotate(4deg);
-}
-
-.collage img:nth-child(4){
-  right:18px;
-  bottom:18px;
-  transform:rotate(-5deg);
-}
-
-/* =========================
-   EXPERIENCE VIEW
-========================= */
-
-#experience{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:100;
-  background:#fff8fb;
-}
-
-#experience.active{
-  display:block;
-}
-
-.experienceShell{
-  width:100%;
-  height:100%;
-  position:relative;
-  overflow:hidden;
-}
-
-.experienceTop{
-  position:absolute;
-  left:18px;
-  right:18px;
-  top:16px;
-  z-index:20;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.experienceBrand{
-  color:#8d6777;
-  font-weight:900;
-  font-size:14px;
-  background:rgba(255,255,255,.70);
-  border:1px solid rgba(90,55,76,.08);
-  padding:8px 12px;
-  border-radius:999px;
-  backdrop-filter:blur(12px);
-}
-
-.audioHint{
-  color:#8d6777;
-  background:rgba(255,255,255,.70);
-  border:1px solid rgba(90,55,76,.08);
-  padding:8px 12px;
-  border-radius:999px;
-  font-size:12px;
-}
-
-.experienceSlides{
-  width:100%;
-  height:100%;
-  position:relative;
-}
-
-.expSlide{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-  padding:70px 20px;
-  opacity:0;
-  transform:translateX(60px) scale(.97);
-  filter:blur(8px);
-  pointer-events:none;
-  transition:
-    opacity .72s ease,
-    transform .8s cubic-bezier(.2,.8,.2,1),
-    filter .72s ease;
-}
-
-.expSlide.active{
-  opacity:1;
-  transform:translateX(0) scale(1);
-  filter:blur(0);
-  pointer-events:auto;
-}
-
-.expBackground{
-  position:absolute;
-  inset:0;
-}
-
-.expContent{
-  position:relative;
-  z-index:5;
-  width:min(860px,100%);
-  text-align:center;
-}
-
-.expTitle{
-  font-size:clamp(42px,8vw,82px);
-  line-height:.96;
-  letter-spacing:-3px;
-  color:#6d4c5d;
-}
-
-.expSub{
-  max-width:650px;
-  margin:20px auto 0;
-  color:#8e7784;
-  line-height:1.8;
-  font-size:17px;
-}
-
-.softCard{
-  width:min(620px,100%);
-  margin:auto;
-  padding:28px;
-  border-radius:28px;
-  background:rgba(255,255,255,.72);
-  border:1px solid rgba(64,45,58,.08);
-  box-shadow:var(--shadow);
-}
-
-.flowerCat{
-  font-size:115px;
-  animation:sceneFloat 4s ease-in-out infinite;
-}
-
-.memeText{
-  font-size:clamp(32px,6vw,62px);
-  font-weight:950;
-  color:#725565;
-}
-
-.hug{
-  font-size:120px;
-  animation:hugFloat 3s ease-in-out infinite;
-}
-
-@keyframes hugFloat{
-  0%,100%{transform:scale(1) translateY(0)}
-  50%{transform:scale(1.08) translateY(-10px)}
-}
-
-.experiencePhoto{
-  max-width:min(72vw,520px);
-  max-height:68vh;
-  object-fit:contain;
-  border-radius:12px;
-  padding:10px;
-  background:#fff;
-  box-shadow:0 25px 55px rgba(90,60,76,.18);
-  animation:experiencePhoto 7s ease-in-out infinite;
-}
-
-@keyframes experiencePhoto{
-  0%,100%{transform:scale(1) rotate(-1deg)}
-  50%{transform:scale(1.025) rotate(1deg)}
-}
-
-.finalLetter{
-  width:min(620px,100%);
-  padding:34px 28px;
-  background:#fff;
-  border-radius:4px;
-  box-shadow:0 30px 70px rgba(90,60,76,.16);
-  transform:rotate(-1deg);
-}
-
-.finalLetter h3{
-  color:#7c5b6b;
-  font-size:30px;
-}
-
-.finalLetter p{
-  margin-top:18px;
-  color:#7f6875;
-  line-height:1.9;
-  white-space:pre-wrap;
-}
-
-.expNav{
-  position:absolute;
-  left:18px;
-  right:18px;
-  bottom:18px;
-  z-index:20;
-  display:flex;
-  justify-content:center;
-  gap:10px;
-}
-
-.expBtn{
-  border:1px solid rgba(90,55,76,.10);
-  background:rgba(255,255,255,.74);
-  color:#735565;
-  padding:12px 18px;
-  border-radius:999px;
-  font-weight:800;
-  backdrop-filter:blur(12px);
-}
-
-.expProgress{
-  position:absolute;
-  top:60px;
-  left:18px;
-  right:18px;
-  z-index:20;
-  display:flex;
-  gap:4px;
-}
-
-.expProgress span{
-  flex:1;
-  height:3px;
-  background:rgba(105,76,94,.14);
-  border-radius:9px;
-  overflow:hidden;
-}
-
-.expProgress span.active{
-  background:linear-gradient(90deg,#f292b7,#b8a3ed);
-}
-
-.closeExperience{
-  border:1px solid rgba(90,55,76,.10);
-  background:rgba(255,255,255,.74);
-  color:#735565;
-  padding:9px 12px;
-  border-radius:999px;
-  font-weight:800;
-}
-
-/* =========================
-   RESPONSIVE
-========================= */
-
-@media(max-width:900px){
-  .categories{grid-template-columns:repeat(2,1fr)}
-  .creatorGrid{grid-template-columns:1fr}
-}
-
-@media(max-width:620px){
-  .nav-actions{display:none}
-  .hero{padding-top:65px}
-  .hero h1{letter-spacing:-2.2px}
-  .categories{grid-template-columns:1fr}
-  .two,.photoGrid,.extraGrid{grid-template-columns:1fr}
-  .step{padding:20px;min-height:590px}
-  .phone{width:min(100%,350px);min-height:580px}
-  .expTitle{letter-spacing:-2px}
-  .experiencePhoto{max-width:88vw}
-}
-
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{
-    animation:none!important;
-    transition:none!important;
-  }
-}
+html{scroll-behavior:smooth}
+body{min-height:100vh;color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(circle at 8% 8%,#ffe3ee 0,transparent 27%),radial-gradient(circle at 92% 15%,#eee7ff 0,transparent 28%),linear-gradient(180deg,#fffafd,#fff7fa 55%,#fffdfa);overflow-x:hidden}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+.ambient{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:-5}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.3;animation:blob 15s ease-in-out infinite alternate}
+.blob.a{width:280px;height:280px;background:#ffd2e3;left:-90px;top:70px}.blob.b{width:340px;height:340px;background:#e3d9ff;right:-110px;top:33%;animation-duration:18s}.blob.c{width:240px;height:240px;background:#dff2e7;left:40%;bottom:-100px;animation-duration:21s}
+@keyframes blob{0%{transform:translate(0,0) scale(1)}50%{transform:translate(35px,-25px) scale(1.08)}100%{transform:translate(-25px,38px) scale(.94)}}
+.float{position:fixed;pointer-events:none;opacity:0;animation:floatUp var(--dur) ease-in-out infinite;animation-delay:var(--delay);z-index:-1}
+@keyframes floatUp{0%{transform:translateY(130px) rotate(0);opacity:0}20%{opacity:.3}55%{transform:translate(var(--x),-90px) rotate(8deg);opacity:.55}100%{transform:translate(calc(var(--x)*-1),-340px) rotate(-8deg);opacity:0}}
+.container{width:min(1180px,92%);margin:auto}
+.nav{height:78px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:10px;font-size:23px;font-weight:950;letter-spacing:-1px;color:var(--ink);text-decoration:none}
+.logoMark{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,#f29bbb,#bba8ed);color:#fff;box-shadow:0 10px 30px rgba(239,145,181,.22)}
+.logo span{color:#e17ea7}
+.navActions{display:flex;gap:9px}
+.btn{border:0;border-radius:14px;padding:12px 18px;font-weight:850;transition:.28s ease;position:relative;overflow:hidden}
+.btn:hover{transform:translateY(-2px)}
+.primary{color:#fff;background:linear-gradient(135deg,#ef91b5,#b8a6ed);box-shadow:0 14px 32px rgba(233,138,177,.2)}
+.secondary{color:var(--ink);background:rgba(255,255,255,.72);border:1px solid var(--line)}
+.soft{color:#8c5f74;background:#fff0f5;border:1px solid #ffd5e5}
+.hero{text-align:center;padding:92px 0 60px}
+.badge{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border:1px solid #eedce4;border-radius:999px;background:rgba(255,255,255,.72);color:#9d7488;font-size:13px;box-shadow:0 8px 28px rgba(80,50,70,.05);animation:tinyFloat 5s ease-in-out infinite}
+@keyframes tinyFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.hero h1{margin-top:22px;font-size:clamp(48px,8vw,88px);line-height:.95;letter-spacing:-4px;color:#6b4d5c;animation:heroFloat 7s ease-in-out infinite}
+.hero h1 span{color:#df7fa6}
+@keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.hero p{max-width:690px;margin:22px auto 0;color:var(--muted);font-size:17px;line-height:1.75}
+.heroActions{margin-top:28px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.section{margin-top:78px}.sectionTitle{text-align:center;margin-bottom:24px}.sectionTitle h2{font-size:34px;letter-spacing:-1px}.sectionTitle p{margin-top:8px;color:#9c8492}
+.categories{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+.category{position:relative;overflow:hidden;min-height:184px;padding:22px;text-align:left;border:1px solid var(--line);border-radius:24px;background:rgba(255,255,255,.72);box-shadow:0 10px 34px rgba(75,48,65,.05);color:var(--ink);transition:.35s ease}
+.category:hover{transform:translateY(-7px) rotate(-.5deg);box-shadow:0 18px 46px rgba(75,48,65,.1)}
+.category::after{content:"";position:absolute;width:140px;height:140px;border-radius:50%;right:-50px;top:-50px;background:#ffe0eb;filter:blur(28px);animation:cardGlow 7s ease-in-out infinite alternate}
+@keyframes cardGlow{from{transform:translate(0,0)}to{transform:translate(-20px,25px)}}
+.category .emoji{display:inline-block;font-size:35px;animation:emojiDrift 4s ease-in-out infinite;position:relative;z-index:1}
+@keyframes emojiDrift{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px) rotate(4deg)}}
+.category h3,.category p{position:relative;z-index:1}.category h3{margin-top:28px;font-size:20px}.category p{margin-top:6px;color:#9b8390;font-size:13px;line-height:1.5}
+#creator{display:none;padding:22px 0 95px}#creator.active{display:block;animation:pageIn .65s cubic-bezier(.2,.8,.2,1)}
+@keyframes pageIn{from{opacity:0;transform:translateY(20px);filter:blur(6px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+.creatorHead{text-align:center;margin-bottom:25px}.creatorHead h2{margin-top:14px;font-size:40px;color:#6c4c5c}.creatorHead p{margin-top:8px;color:#9a8290}
+.progress{display:flex;align-items:center;justify-content:center;margin-bottom:25px}.dot{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1px solid #eddde4;color:#927b89;font-weight:800;transition:.35s}.dot.active{color:#fff;background:linear-gradient(135deg,#f096b8,#b9a7ed);border-color:transparent;box-shadow:0 0 24px rgba(239,145,181,.22);transform:scale(1.08)}.line{width:40px;height:2px;background:#eadde4}
+.creatorGrid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.panel{position:relative;overflow:hidden;border-radius:28px;border:1px solid var(--line);background:rgba(255,255,255,.72);box-shadow:var(--shadow)}
+.steps{overflow:hidden}.track{display:flex;width:500%;transition:transform .72s cubic-bezier(.7,0,.2,1)}.step{width:20%;flex-shrink:0;min-height:610px;padding:28px}.step h3{font-size:28px;color:#6d4c5d}.stepText{margin:7px 0 22px;color:#9a8390;line-height:1.55;font-size:14px}
+label{display:block;margin-bottom:7px;color:#745869;font-size:13px;font-weight:850}
+input,textarea,select{width:100%;border:1px solid #ead9e1;border-radius:14px;background:#fffdfd;color:#543c4b;padding:13px 14px;outline:none;margin-bottom:17px}
+input:focus,textarea:focus,select:focus{border-color:#ee9abc;box-shadow:0 0 0 3px rgba(238,154,188,.1)}
+textarea{min-height:130px;resize:vertical;line-height:1.55}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.photoGrid,.extraGrid,.musicGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.photoBox,.extraCard,.musicCard{padding:14px;border:1px solid #ecdde4;border-radius:18px;background:#fffafc}
+.photoTitle{font-size:12px;letter-spacing:1px;font-weight:900;color:#ae7188;margin-bottom:9px}.photoBox input{padding:9px;font-size:12px;margin-bottom:10px}
+.previewImg{width:100%;height:110px;object-fit:cover;border-radius:13px;display:none;margin-bottom:9px}.finalPreview{width:100%;max-height:200px;display:none;object-fit:cover;border-radius:16px;margin-bottom:15px}
+.extraCard{text-align:left;color:var(--ink);transition:.25s}.extraCard:hover{transform:translateY(-3px)}.extraCard.selected{border-color:#ee95b9;background:#fff0f6;box-shadow:0 8px 25px rgba(225,124,166,.1)}.extraEmoji{font-size:30px}.extraCard h4{margin-top:9px;font-size:16px}.extraCard p{margin-top:4px;color:#9b8290;font-size:12px;line-height:1.45}
+.customBox{margin-top:14px;padding:16px;border:1px dashed #e6cfd9;border-radius:18px;background:#fff8fb}.customBox h4{font-size:16px;margin-bottom:6px}.customBox p{font-size:12px;color:#9a8390;margin-bottom:14px}.customRow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.musicCard{text-align:left;transition:.25s;cursor:pointer}.musicCard.selected{border-color:#ee95b9;background:#fff0f6}.musicCard strong{font-size:14px}.musicCard small{display:block;margin-top:4px;color:#9a8390}
+.stepNav{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:16px 22px;border-top:1px solid var(--line);background:rgba(255,255,255,.45)}.right{display:flex;gap:8px}
+.phone{width:min(100%,370px);min-height:620px;margin:20px auto;border-radius:34px;overflow:hidden;position:relative;background:#fff9fc;box-shadow:0 25px 70px rgba(85,55,72,.14)}
+.phoneScene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:34px 24px;opacity:0;pointer-events:none;transform:translateX(48px) scale(.98);filter:blur(5px);transition:opacity .65s ease,transform .75s cubic-bezier(.2,.8,.2,1),filter .65s ease}
+.phoneScene.active{opacity:1;pointer-events:auto;transform:translateX(0) scale(1);filter:blur(0)}
+.sceneBg{position:absolute;inset:0;overflow:hidden}.sceneBlob{position:absolute;width:190px;height:190px;border-radius:50%;filter:blur(38px);opacity:.28;animation:sceneBlob 8s ease-in-out infinite alternate}.sceneBlob.one{left:-80px;top:-60px;background:#ffd0e3}.sceneBlob.two{right:-75px;bottom:-60px;background:#e4daff}
+@keyframes sceneBlob{from{transform:translate(0,0)}to{transform:translate(35px,-25px) scale(1.12)}}
+.sceneContent{position:relative;z-index:3;max-width:310px}.sceneEmoji{font-size:82px;display:inline-block;animation:sceneFloat 4s ease-in-out infinite}@keyframes sceneFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-10px) rotate(3deg)}}
+.sceneTitle{margin-top:13px;font-size:38px;line-height:1.03;color:#6c4c5c;letter-spacing:-1px}.sceneSub{margin-top:13px;color:#907a88;font-size:14px;line-height:1.6}
+.sticker{position:absolute;font-size:26px;animation:stickerFloat 5s ease-in-out infinite}.s1{left:12%;top:18%}.s2{right:12%;top:27%;animation-delay:1s}.s3{left:15%;bottom:18%;animation-delay:2s}.s4{right:12%;bottom:15%;animation-delay:3s}
+@keyframes stickerFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-12px) rotate(6deg)}}
+.scenePhoto{width:205px;height:270px;object-fit:cover;padding:8px;background:#fff;border-radius:7px;box-shadow:0 18px 40px rgba(82,55,70,.18);transform:rotate(-4deg);animation:photoFloat 5s ease-in-out infinite}
+@keyframes photoFloat{0%,100%{transform:rotate(-4deg) translateY(0)}50%{transform:rotate(2deg) translateY(-9px)}}
+.cat{font-size:102px;animation:catFloat 4s ease-in-out infinite}@keyframes catFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px) rotate(2deg)}}
+.dance{font-size:98px;animation:dance .75s ease-in-out infinite alternate}@keyframes dance{from{transform:translateY(0) rotate(-8deg)}to{transform:translateY(-10px) rotate(8deg)}}
+.meme{font-size:29px;font-weight:950;line-height:1.12;color:#735365}.hug{font-size:116px;animation:hug 3s ease-in-out infinite}@keyframes hug{0%,100%{transform:scale(1)}50%{transform:scale(1.08) translateY(-8px)}}
+.collage{width:270px;height:300px;margin:auto;position:relative}.collage img{position:absolute;width:145px;height:180px;object-fit:cover;padding:7px;background:#fff;border-radius:5px;box-shadow:0 18px 35px rgba(82,55,70,.17)}
+.collage img:nth-child(1){left:8px;top:20px;transform:rotate(-8deg)}.collage img:nth-child(2){right:0;top:8px;transform:rotate(7deg)}.collage img:nth-child(3){left:42px;bottom:5px;transform:rotate(4deg)}.collage img:nth-child(4){right:18px;bottom:18px;transform:rotate(-5deg)}
+#experience{display:none;position:fixed;inset:0;z-index:500;background:#fff7fb}#experience.active{display:block}.expShell{height:100%;position:relative;overflow:hidden}
+.expTop{position:absolute;top:15px;left:15px;right:15px;z-index:40;display:flex;justify-content:space-between;align-items:center}.expBrand,.audioHint,.closeExp{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.75);border:1px solid rgba(74,51,65,.08);backdrop-filter:blur(12px);color:#7b5e6c;font-size:12px}.closeExp{cursor:pointer;font-weight:800}
+.expBars{position:absolute;top:56px;left:15px;right:15px;z-index:40;display:flex;gap:4px}.expBars span{height:3px;flex:1;background:rgba(100,70,88,.12);border-radius:10px}.expBars span.active{background:linear-gradient(90deg,#ef91b5,#baa7ef)}
+.expSlides{position:absolute;inset:0}.expSlide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:75px 18px 95px;opacity:0;pointer-events:none;transform:translateX(65px) scale(.97);filter:blur(8px);transition:opacity .72s ease,transform .82s cubic-bezier(.2,.8,.2,1),filter .72s ease;overflow:hidden}
+.expSlide.active{opacity:1;pointer-events:auto;transform:translateX(0) scale(1);filter:blur(0)}.expBg{position:absolute;inset:0}.expBlob{position:absolute;width:300px;height:300px;border-radius:50%;filter:blur(65px);opacity:.23;animation:expBlob 10s ease-in-out infinite alternate}.expBlob.a{left:-100px;top:-90px;background:#ffd1e3}.expBlob.b{right:-100px;bottom:-90px;background:#e4d9ff}
+@keyframes expBlob{from{transform:translate(0,0)}to{transform:translate(70px,-45px) scale(1.15)}}
+.expContent{position:relative;z-index:6;width:min(900px,100%)}.expTitle{font-size:clamp(42px,8vw,84px);line-height:.96;letter-spacing:-3px;color:#6d4d5d}.expSub{max-width:680px;margin:18px auto 0;color:#8b7582;line-height:1.8;font-size:17px}.expEmoji{font-size:120px;display:inline-block;animation:sceneFloat 4s ease-in-out infinite}
+.expPhoto{max-width:min(78vw,540px);max-height:65vh;object-fit:contain;padding:10px;background:#fff;border-radius:11px;box-shadow:0 25px 60px rgba(82,55,70,.18);animation:photoFloat 7s ease-in-out infinite}.expCaption{margin-top:15px;color:#7b5e6c;font-style:italic;font-size:15px}
+.catBig{font-size:135px;animation:catFloat 4s ease-in-out infinite}.danceBig{font-size:130px;animation:dance .75s ease-in-out infinite alternate}.hugBig{font-size:140px;animation:hug 3s ease-in-out infinite}.memeBig{font-size:clamp(34px,7vw,70px);font-weight:950;line-height:1.1;color:#715263}
+.softCardExp{width:min(700px,100%);margin:auto;padding:30px 26px;background:rgba(255,255,255,.8);border:1px solid rgba(74,51,65,.08);border-radius:28px;box-shadow:var(--shadow)}.softCardExp p{margin-top:16px;color:#7f6975;white-space:pre-wrap;line-height:1.85}
+.finalImage{max-width:min(72vw,520px);max-height:55vh;object-fit:contain;padding:10px;background:#fff;border-radius:10px;box-shadow:0 28px 65px rgba(82,55,70,.2);animation:photoFloat 7s ease-in-out infinite}.finalCard{width:min(610px,100%);margin:22px auto 0;padding:30px 26px;background:#fff;border-radius:5px;box-shadow:0 30px 70px rgba(82,55,70,.15);transform:rotate(-1deg)}.finalCard h3{font-size:29px;color:#775968}.finalCard p{margin-top:16px;line-height:1.85;color:#7c6572;white-space:pre-wrap}
+.expNav{position:absolute;left:15px;right:15px;bottom:18px;z-index:40;display:flex;justify-content:center;gap:8px}.expBtn{border:1px solid rgba(74,51,65,.1);background:rgba(255,255,255,.78);color:#765a68;padding:12px 18px;border-radius:999px;font-weight:850;backdrop-filter:blur(12px)}
+.candleScene{font-size:110px;display:inline-block;animation:flame 1.25s ease-in-out infinite alternate}@keyframes flame{from{transform:translateY(0) scale(1)}to{transform:translateY(-4px) scale(1.03)}}
+.blowStatus{margin-top:16px;padding:9px 13px;border-radius:999px;background:rgba(255,255,255,.72);color:#805f70;font-size:12px;border:1px solid rgba(74,51,65,.08)}
+.cameraBox{width:min(470px,88vw);margin:20px auto 0;border-radius:22px;overflow:hidden;background:#19131e;box-shadow:0 20px 50px rgba(60,40,55,.18);position:relative}
+.cameraBox video{width:100%;display:block;aspect-ratio:4/3;object-fit:cover;transform:scaleX(-1)}
+.candleOverlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:55px;pointer-events:none}
+.blowMeter{height:8px;background:#3b2d3e}.blowMeter span{display:block;height:100%;width:0;background:linear-gradient(90deg,#ef91b5,#baa7ef);transition:.08s}
+
+#success{display:none;text-align:center;padding:110px 15px}.successIcon{font-size:75px;animation:sceneFloat 3s ease-in-out infinite}#success h2{margin-top:12px;font-size:clamp(35px,6vw,60px);color:#6d4d5d}#success p{max-width:650px;margin:14px auto 24px;color:#907987;line-height:1.8}.demoLink{width:min(640px,100%);margin:auto;display:flex;gap:8px}
+footer{margin-top:90px;padding:28px 0;border-top:1px solid var(--line);text-align:center;color:#7f6b77;font-size:13px}
+@media(max-width:900px){.categories{grid-template-columns:repeat(2,1fr)}.creatorGrid{grid-template-columns:1fr}}
+@media(max-width:620px){.navActions{display:none}.hero{padding-top:65px}.hero h1{letter-spacing:-2.3px}.categories{grid-template-columns:1fr}.two,.photoGrid,.extraGrid,.musicGrid,.customRow{grid-template-columns:1fr}.step{padding:20px;min-height:650px}.phone{min-height:590px}.expTitle{letter-spacing:-2px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
-
 <body>
 
 <div class="ambient" aria-hidden="true">
-  <div class="blob a"></div>
-  <div class="blob b"></div>
-  <div class="blob c"></div>
-
-  <span class="float" style="left:7%;top:84%;font-size:18px;--dur:13s;--delay:0s;--x:38px;">♡</span>
-  <span class="float" style="left:19%;top:74%;font-size:13px;--dur:17s;--delay:2s;--x:-42px;">✦</span>
-  <span class="float" style="left:31%;top:92%;font-size:18px;--dur:14s;--delay:4s;--x:44px;">🌸</span>
-  <span class="float" style="left:44%;top:82%;font-size:15px;--dur:19s;--delay:1s;--x:-34px;">♡</span>
-  <span class="float" style="left:57%;top:90%;font-size:14px;--dur:15s;--delay:3s;--x:40px;">✧</span>
-  <span class="float" style="left:69%;top:75%;font-size:18px;--dur:18s;--delay:5s;--x:-48px;">💕</span>
-  <span class="float" style="left:82%;top:88%;font-size:15px;--dur:16s;--delay:2s;--x:36px;">🌷</span>
-  <span class="float" style="left:93%;top:68%;font-size:18px;--dur:20s;--delay:6s;--x:-42px;">✦</span>
+  <div class="blob a"></div><div class="blob b"></div><div class="blob c"></div>
+  <span class="float" style="left:6%;top:86%;font-size:18px;--dur:13s;--delay:0s;--x:35px">♡</span>
+  <span class="float" style="left:17%;top:74%;font-size:14px;--dur:17s;--delay:2s;--x:-40px">✦</span>
+  <span class="float" style="left:28%;top:92%;font-size:20px;--dur:15s;--delay:4s;--x:44px">🌸</span>
+  <span class="float" style="left:42%;top:82%;font-size:15px;--dur:19s;--delay:1s;--x:-32px">♡</span>
+  <span class="float" style="left:55%;top:90%;font-size:14px;--dur:14s;--delay:3s;--x:42px">✦</span>
+  <span class="float" style="left:68%;top:76%;font-size:19px;--dur:18s;--delay:5s;--x:-48px">💕</span>
+  <span class="float" style="left:82%;top:88%;font-size:15px;--dur:16s;--delay:2s;--x:36px">🌷</span>
+  <span class="float" style="left:93%;top:65%;font-size:18px;--dur:20s;--delay:6s;--x:-40px">✧</span>
 </div>
 
 <div class="container">
-
 <nav>
-  <a href="#" class="logo" id="logoHome">
-    <div class="logoMark">W</div>
-    Wish<span>ly</span>
-  </a>
-
-  <div class="nav-actions">
+  <a href="#" class="logo" id="logoHome"><div class="logoMark">W</div>Wish<span>ly</span></a>
+  <div class="navActions">
     <button class="btn secondary" id="homeBtn">Home</button>
     <button class="btn primary" id="createTop">Create ✨</button>
   </div>
 </nav>
 
-
-<!-- =========================
-     HOME
-========================= -->
-
 <section id="home">
-
   <div class="hero">
-
     <div class="badge">✨ Turn a feeling into an experience</div>
-
-    <h1>
-      Make their moment<br>
-      <span>unforgettable.</span>
-    </h1>
-
-    <p>
-      Create an aesthetic little story with memories,
-      music, cute animations and moments made just for one person.
-    </p>
-
-    <div class="hero-actions">
-      <button class="btn primary" id="heroStart">
-        Create a Surprise ✨
-      </button>
-
-      <button class="btn secondary" id="heroScroll">
-        Explore Celebrations
-      </button>
+    <h1>Make their moment<br><span>unforgettable.</span></h1>
+    <p>Create an aesthetic little story with memories, music, cute animations, stickers, memes and moments made just for one person.</p>
+    <div class="heroActions">
+      <button class="btn primary" id="heroStart">Create a Surprise ✨</button>
+      <button class="btn secondary" id="heroScroll">Explore Celebrations</button>
     </div>
-
   </div>
-
 
   <div class="section" id="celebrations">
-
-    <div class="sectionTitle">
-      <h2>What are you celebrating?</h2>
-      <p>Pick the feeling. We'll turn it into a story.</p>
-    </div>
-
+    <div class="sectionTitle"><h2>What are you celebrating?</h2><p>Pick the feeling. We'll turn it into a story.</p></div>
     <div class="categories">
-
-      <button class="category" data-category="Birthday">
-        <span class="emoji">🎂</span>
-        <h3>Birthday</h3>
-        <p>Sweet, funny, romantic or emotional.</p>
-      </button>
-
-      <button class="category" data-category="Anniversary">
-        <span class="emoji">💍</span>
-        <h3>Anniversary</h3>
-        <p>Your journey, memories and forever.</p>
-      </button>
-
-      <button class="category" data-category="Proposal">
-        <span class="emoji">💖</span>
-        <h3>Proposal</h3>
-        <p>A beautiful build-up to one question.</p>
-      </button>
-
-      <button class="category" data-category="Friendship">
-        <span class="emoji">👫</span>
-        <h3>Friendship</h3>
-        <p>Funny memories and a heartfelt ending.</p>
-      </button>
-
-      <button class="category" data-category="Graduation">
-        <span class="emoji">🎓</span>
-        <h3>Graduation</h3>
-        <p>Celebrate the chapter they finished.</p>
-      </button>
-
-      <button class="category" data-category="Congratulations">
-        <span class="emoji">🎉</span>
-        <h3>Congratulations</h3>
-        <p>Make a big achievement feel bigger.</p>
-      </button>
-
-      <button class="category" data-category="Thank You">
-        <span class="emoji">💐</span>
-        <h3>Thank You</h3>
-        <p>A softer way to say what they mean.</p>
-      </button>
-
-      <button class="category" data-category="Custom">
-        <span class="emoji">🎁</span>
-        <h3>Custom</h3>
-        <p>Build your own little world.</p>
-      </button>
-
+      <button class="category" data-category="Birthday"><span class="emoji">🎂</span><h3>Birthday</h3><p>Cute, romantic, funny or emotional.</p></button>
+      <button class="category" data-category="Anniversary"><span class="emoji">💍</span><h3>Anniversary</h3><p>Your journey, memories and forever.</p></button>
+      <button class="category" data-category="Proposal"><span class="emoji">💖</span><h3>Proposal</h3><p>Build the suspense to one question.</p></button>
+      <button class="category" data-category="Friendship"><span class="emoji">👫</span><h3>Friendship</h3><p>Funny memories and a heartfelt ending.</p></button>
+      <button class="category" data-category="Graduation"><span class="emoji">🎓</span><h3>Graduation</h3><p>Celebrate the chapter they finished.</p></button>
+      <button class="category" data-category="Congratulations"><span class="emoji">🎉</span><h3>Congratulations</h3><p>Make a big achievement feel bigger.</p></button>
+      <button class="category" data-category="Thank You"><span class="emoji">💐</span><h3>Thank You</h3><p>Say it in a softer way.</p></button>
+      <button class="category" data-category="Custom"><span class="emoji">🎁</span><h3>Custom</h3><p>Build your own little world.</p></button>
     </div>
   </div>
-
 </section>
 
-
-<!-- =========================
-     CREATOR
-========================= -->
-
 <section id="creator">
-
-  <div class="creatorHeader">
+  <div class="creatorHead">
     <div class="badge" id="creatorBadge">🎂 Birthday</div>
     <h2>Build your little story</h2>
-    <p>Everything is customizable before you share it.</p>
+    <p>One step at a time. Everything stays customizable.</p>
   </div>
 
   <div class="progress">
-    <span class="dot active">1</span>
-    <span class="line"></span>
-    <span class="dot">2</span>
-    <span class="line"></span>
-    <span class="dot">3</span>
-    <span class="line"></span>
-    <span class="dot">4</span>
-    <span class="line"></span>
-    <span class="dot">5</span>
+    <span class="dot active">1</span><span class="line"></span><span class="dot">2</span><span class="line"></span>
+    <span class="dot">3</span><span class="line"></span><span class="dot">4</span><span class="line"></span><span class="dot">5</span>
   </div>
-
 
   <div class="creatorGrid">
 
-    <!-- LEFT -->
     <div class="panel">
+      <div class="steps"><div class="track" id="track">
 
-      <div class="steps">
+        <section class="step">
+          <h3>🌷 Who is this for?</h3>
+          <p class="stepText">Start with the person and the mood you want.</p>
+          <label for="language">Language</label>
+          <select id="language"><option>English</option><option>Hindi</option><option>Hinglish</option><option>Bengali</option><option>Punjabi</option></select>
+          <div class="two">
+            <div><label for="name">Name</label><input id="name" placeholder="e.g. Muskan"></div>
+            <div><label for="date">Special date</label><input id="date" type="date"></div>
+          </div>
+          <label for="tone">Tone</label>
+          <select id="tone"><option>Cute & Romantic</option><option>Emotional</option><option>Funny</option><option>Dreamy</option><option>Elegant</option></select>
+        </section>
 
-        <div class="track" id="track">
-
-          <!-- STEP 1 -->
-          <section class="step">
-
-            <h3>🌷 Who is this for?</h3>
-
-            <p class="stepText">
-              Start with the person and the feeling you want the story to have.
-            </p>
-
-            <label for="language">Language</label>
-            <select id="language">
-              <option>English</option>
-              <option>Hindi</option>
-              <option>Hinglish</option>
-              <option>Bengali</option>
-              <option>Punjabi</option>
-            </select>
-
-            <div class="two">
-
-              <div>
-                <label for="name">Name</label>
-                <input id="name" placeholder="e.g. Muskan">
-              </div>
-
-              <div>
-                <label for="date">Special date</label>
-                <input id="date" type="date">
-              </div>
-
-            </div>
-
-            <label for="tone">Tone</label>
-            <select id="tone">
-              <option>Cute & Romantic</option>
-              <option>Emotional</option>
-              <option>Funny</option>
-              <option>Dreamy</option>
-              <option>Elegant</option>
-            </select>
-
-          </section>
-
-
-          <!-- STEP 2 -->
-          <section class="step">
-
-            <h3>💌 Say what you feel</h3>
-
-            <p class="stepText">
-              This becomes the heart of the experience.
-            </p>
-
-            <label for="message">Main message</label>
-            <textarea id="message">Happy Birthday, my special person ❤️
+        <section class="step">
+          <h3>💌 Say what you feel</h3>
+          <p class="stepText">Your words become part of the story.</p>
+          <label for="message">Main message</label>
+          <textarea id="message">Happy Birthday, my special person ❤️
 
 I hope your day is as beautiful as your smile.
 Keep smiling, keep shining and always remember
 how special you are to me. 🥹❤️</textarea>
-
-            <label for="memoryLine">Line before memories</label>
-            <input
-              id="memoryLine"
-              value="Wait… there is something special I want you to see. 💌"
-            >
-
-            <label for="endingMessage">Final message</label>
-            <textarea id="endingMessage">Once again, Happy Birthday! ❤️
+          <label for="memoryLine">Line before memories</label>
+          <input id="memoryLine" value="Wait… there is something special I want you to see. 💌">
+          <label for="endingMessage">Final message</label>
+          <textarea id="endingMessage">Once again, Happy Birthday! ❤️
 
 May your life always be filled with happiness,
 beautiful memories and countless reasons to smile.</textarea>
+        </section>
 
-          </section>
+        <section class="step">
+          <h3>📸 Keep the memories</h3>
+          <p class="stepText">Add up to four photos and captions.</p>
+          <div class="photoGrid">
+            <div class="photoBox"><div class="photoTitle">MEMORY 01</div><input type="file" accept="image/*" data-photo="0"><img class="previewImg" data-preview="0" alt="Memory 1"><input type="text" placeholder="Caption..." data-caption="0"></div>
+            <div class="photoBox"><div class="photoTitle">MEMORY 02</div><input type="file" accept="image/*" data-photo="1"><img class="previewImg" data-preview="1" alt="Memory 2"><input type="text" placeholder="Caption..." data-caption="1"></div>
+            <div class="photoBox"><div class="photoTitle">MEMORY 03</div><input type="file" accept="image/*" data-photo="2"><img class="previewImg" data-preview="2" alt="Memory 3"><input type="text" placeholder="Caption..." data-caption="2"></div>
+            <div class="photoBox"><div class="photoTitle">MEMORY 04</div><input type="file" accept="image/*" data-photo="3"><img class="previewImg" data-preview="3" alt="Memory 4"><input type="text" placeholder="Caption..." data-caption="3"></div>
+          </div>
+        </section>
 
+        <section class="step">
+          <h3>✨ Pick your extra magic</h3>
+          <p class="stepText">Ready-made cute moments are here. If you don't like them, add your own.</p>
 
-          <!-- STEP 3 -->
-          <section class="step">
+          <div class="extraGrid">
+            <button class="extraCard selected" data-extra="cat"><div class="extraEmoji">🐱🌷</div><h4>Cat Gives Flower</h4><p>Little cat enters and gives a flower.</p></button>
+            <button class="extraCard" data-extra="dance"><div class="extraEmoji">🐼💃</div><h4>Dancing Animal</h4><p>A tiny dance break.</p></button>
+            <button class="extraCard" data-extra="emotional"><div class="extraEmoji">🥹🐱</div><h4>Emotional Cat</h4><p>Soft, cute and emotional.</p></button>
+            <button class="extraCard" data-extra="meme"><div class="extraEmoji">😂✨</div><h4>Meme Moment</h4><p>Funny editable scene.</p></button>
+            <button class="extraCard" data-extra="hug"><div class="extraEmoji">🤗💗</div><h4>Virtual Hug</h4><p>A warm little hug.</p></button>
+            <button class="extraCard" data-extra="flowers"><div class="extraEmoji">🌸🌷</div><h4>Flower Garden</h4><p>Flowers bloom around the message.</p></button>
+          </div>
 
-            <h3>📸 Keep the memories</h3>
-
-            <p class="stepText">
-              Add up to four photos. Wishly will turn them into a little scrapbook story.
-            </p>
-
-            <div class="photoGrid">
-
-              <div class="photoBox">
-                <div class="photoTitle">MEMORY 01</div>
-                <input type="file" accept="image/*" data-photo="0">
-                <img class="previewImg" data-preview="0" alt="Memory one">
-                <input type="text" placeholder="Caption..." data-caption="0">
-              </div>
-
-              <div class="photoBox">
-                <div class="photoTitle">MEMORY 02</div>
-                <input type="file" accept="image/*" data-photo="1">
-                <img class="previewImg" data-preview="1" alt="Memory two">
-                <input type="text" placeholder="Caption..." data-caption="1">
-              </div>
-
-              <div class="photoBox">
-                <div class="photoTitle">MEMORY 03</div>
-                <input type="file" accept="image/*" data-photo="2">
-                <img class="previewImg" data-preview="2" alt="Memory three">
-                <input type="text" placeholder="Caption..." data-caption="2">
-              </div>
-
-              <div class="photoBox">
-                <div class="photoTitle">MEMORY 04</div>
-                <input type="file" accept="image/*" data-photo="3">
-                <img class="previewImg" data-preview="3" alt="Memory four">
-                <input type="text" placeholder="Caption..." data-caption="3">
-              </div>
-
+          <div class="customBox">
+            <h4>➕ Add Your Own Custom Slide</h4>
+            <p>Upload your own meme, sticker or image and add your own text.</p>
+            <label for="customImage">Your meme / sticker / image</label>
+            <input id="customImage" type="file" accept="image/*">
+            <div class="customRow">
+              <div><label for="customTitle">Title</label><input id="customTitle" placeholder="e.g. Only you can understand this 😂"></div>
+              <div><label for="customSmall">Small line</label><input id="customSmall" placeholder="An inside joke ❤️"></div>
             </div>
+            <label for="customAnimation">Animation</label>
+            <select id="customAnimation"><option>Float</option><option>Fade</option><option>Slide</option><option>Zoom</option><option>Scrapbook</option><option>Drift</option></select>
+            <label for="memeText">Optional meme text</label>
+            <input id="memeText" value="POV: The cutest person just leveled up 😂">
+          </div>
 
-          </section>
-
-
-          <!-- STEP 4 -->
-          <section class="step">
-
-            <h3>✨ Add a little magic</h3>
-
-            <p class="stepText">
-              Pick extra slides for those cute little moments that make the story yours.
-            </p>
-
-            <div class="extraGrid">
-
-              <button class="extraCard selected" data-extra="cat">
-                <div class="extraEmoji">🐱🌷</div>
-                <h4>Cat Gives a Flower</h4>
-                <p>A tiny cat appears and gives a flower.</p>
-              </button>
-
-              <button class="extraCard" data-extra="dance">
-                <div class="extraEmoji">🐼💃</div>
-                <h4>Dancing Animal</h4>
-                <p>A cute little dance break.</p>
-              </button>
-
-              <button class="extraCard" data-extra="emotional">
-                <div class="extraEmoji">🥹🐱</div>
-                <h4>Emotional Cat</h4>
-                <p>Soft, cute and a little emotional.</p>
-              </button>
-
-              <button class="extraCard" data-extra="meme">
-                <div class="extraEmoji">😂✨</div>
-                <h4>Meme Moment</h4>
-                <p>Add a funny little scene.</p>
-              </button>
-
-              <button class="extraCard" data-extra="hug">
-                <div class="extraEmoji">🤗💗</div>
-                <h4>Virtual Hug</h4>
-                <p>A cute warm hug scene.</p>
-              </button>
-
-              <button class="extraCard" data-extra="flowers">
-                <div class="extraEmoji">🌸🌷</div>
-                <h4>Flower Garden</h4>
-                <p>Flowers bloom around the message.</p>
-              </button>
-
+          <div style="margin-top:16px">
+            <label>Background music</label>
+            <div class="musicGrid">
+              <button class="musicCard selected" data-music="none"><strong>🔇 No Music</strong><small>Silent experience</small></button>
+              <button class="musicCard" data-music="cute"><strong>🎀 Cute</strong><small>Soft and playful</small></button>
+              <button class="musicCard" data-music="romantic"><strong>💗 Romantic</strong><small>Warm and dreamy</small></button>
+              <button class="musicCard" data-music="emotional"><strong>🌙 Emotional</strong><small>Slow and heartfelt</small></button>
             </div>
-
-            <br>
-
-            <label for="memeText">Optional meme / cute line</label>
-            <input
-              id="memeText"
-              value="POV: The cutest person just leveled up 😂"
-            >
-
-            <label for="musicFile">Your music (optional)</label>
+            <label for="musicFile" style="margin-top:14px">Or upload your own music</label>
             <input id="musicFile" type="file" accept="audio/*">
+          </div>
+        </section>
 
-          </section>
+        <section class="step">
+          <h3>🖼️ Finish the story</h3>
+          <p class="stepText">One last frame, then your experience is ready.</p>
+          <label for="finalImage">Final image</label>
+          <input id="finalImage" type="file" accept="image/*">
+          <img id="finalPreview" class="finalPreview" alt="Final image">
+          <label for="finalTitle">Final title</label>
+          <input id="finalTitle" value="Happy Birthday, you beautiful soul. ❤️">
+        </section>
 
-
-          <!-- STEP 5 -->
-          <section class="step">
-
-            <h3>🖼️ The final reveal</h3>
-
-            <p class="stepText">
-              Give the story one final beautiful frame.
-            </p>
-
-            <label for="finalImage">Final image</label>
-            <input id="finalImage" type="file" accept="image/*">
-
-            <img
-              id="finalPreview"
-              class="finalPreview"
-              alt="Final image preview"
-            >
-
-            <label for="finalTitle">Final title</label>
-            <input
-              id="finalTitle"
-              value="Happy Birthday, you beautiful soul. ❤️"
-            >
-
-          </section>
-
-        </div>
-
-      </div>
-
+      </div></div>
 
       <div class="stepNav">
-
-        <button class="btn secondary" id="backBtn">
-          ← Back
-        </button>
-
-        <div class="right">
-
-          <button class="btn soft" id="cancelBtn">
-            Cancel
-          </button>
-
-          <button class="btn primary" id="nextBtn">
-            Next →
-          </button>
-
-        </div>
-
+        <button class="btn secondary" id="backBtn">← Back</button>
+        <div class="right"><button class="btn soft" id="cancelBtn">Cancel</button><button class="btn primary" id="nextBtn">Next →</button></div>
       </div>
-
     </div>
 
+    <div class="panel" style="padding:20px">
+      <div style="font-size:20px;font-weight:900;color:#6d4c5d;margin-bottom:15px">👀 Live Experience Preview</div>
+      <div class="phone" id="phonePreview">
 
-    <!-- RIGHT PREVIEW -->
-    <div class="panel previewPanel">
-
-      <div class="previewHeading">
-        👀 Live Experience Preview
-      </div>
-
-      <div class="phone" id="phone">
-
-        <!-- Scene 1 -->
-        <div class="phoneScene active" data-scene="0">
-
-          <div class="sceneBg">
-            <div class="sceneBlob one"></div>
-            <div class="sceneBlob two"></div>
-          </div>
-
-          <span class="sticker s1">✦</span>
-          <span class="sticker s2">🌸</span>
-          <span class="sticker s3">♡</span>
-          <span class="sticker s4">✧</span>
-
-          <div class="sceneContent">
-            <div class="script">A little surprise</div>
-            <div class="sceneTitle">
-              Someone made<br>
-              something for you.
-            </div>
-            <div class="sceneSub">
-              Tap to begin the story.
-            </div>
-            <div class="sceneEmoji">💌</div>
-          </div>
-
+        <div class="phoneScene active" data-preview="0">
+          <div class="sceneBg"><div class="sceneBlob one"></div><div class="sceneBlob two"></div></div>
+          <span class="sticker s1">✦</span><span class="sticker s2">🌸</span><span class="sticker s3">♡</span><span class="sticker s4">✧</span>
+          <div class="sceneContent"><div class="script">A little surprise</div><div class="sceneTitle">Someone made<br>something for you.</div><div class="sceneSub">A tiny story is waiting.</div><div class="sceneEmoji">💌</div></div>
         </div>
 
-
-        <!-- Scene 2 -->
-        <div class="phoneScene" data-scene="1">
-
-          <div class="sceneBg">
-            <div class="sceneBlob one"></div>
-            <div class="sceneBlob two"></div>
-          </div>
-
-          <span class="sticker s1">🌷</span>
-          <span class="sticker s2">♡</span>
-          <span class="sticker s3">✦</span>
-          <span class="sticker s4">🌸</span>
-
-          <div class="sceneContent">
-
-            <div class="sceneEmoji">✨</div>
-
-            <div class="sceneTitle">
-              <span id="previewName">Someone special</span>
-            </div>
-
-            <div class="sceneSub">
-              Today is all about you. ❤️
-            </div>
-
-          </div>
-
+        <div class="phoneScene" data-preview="1">
+          <div class="sceneBg"><div class="sceneBlob one"></div><div class="sceneBlob two"></div></div>
+          <span class="sticker s1">🌷</span><span class="sticker s2">♡</span><span class="sticker s3">✦</span><span class="sticker s4">🌸</span>
+          <div class="sceneContent"><div class="sceneEmoji">✨</div><div class="sceneTitle" id="previewName">Someone special</div><div class="sceneSub">Today is all about you. ❤️</div></div>
         </div>
 
-
-        <!-- Scene 3 -->
-        <div class="phoneScene" data-scene="2">
-
-          <div class="sceneBg">
-            <div class="sceneBlob one"></div>
-            <div class="sceneBlob two"></div>
-          </div>
-
-          <span class="sticker s1">🕯️</span>
-          <span class="sticker s2">✦</span>
-          <span class="sticker s3">♡</span>
-          <span class="sticker s4">🌸</span>
-
-          <div class="sceneContent">
-
-            <div class="script">A little magic</div>
-
-            <div class="sceneTitle">
-              Make a wish…
-            </div>
-
-            <div class="sceneSub">
-              Then come a little closer.
-            </div>
-
-            <div class="sceneEmoji">🕯️</div>
-
-          </div>
-
+        <div class="phoneScene" data-preview="2">
+          <div class="sceneBg"><div class="sceneBlob one"></div><div class="sceneBlob two"></div></div>
+          <span class="sticker s1">🕯️</span><span class="sticker s2">✦</span><span class="sticker s3">♡</span><span class="sticker s4">🌸</span>
+          <div class="sceneContent"><div class="script">Make a wish</div><div class="sceneTitle">Are you ready?</div><div class="sceneSub">Camera + candle blow happens here. 💨</div><div class="sceneEmoji">🕯️🕯️🕯️</div></div>
         </div>
 
-
-        <!-- Scene 4 -->
-        <div class="phoneScene" data-scene="3">
-
-          <div class="sceneBg">
-            <div class="sceneBlob one"></div>
-            <div class="sceneBlob two"></div>
-          </div>
-
-          <span class="sticker s1">💕</span>
-          <span class="sticker s2">🎈</span>
-          <span class="sticker s3">✦</span>
-          <span class="sticker s4">🌷</span>
-
-          <div class="sceneContent">
-
-            <div class="sceneEmoji">🎂</div>
-
-            <div class="sceneTitle">
-              Happy Birthday
-            </div>
-
-            <div class="sceneSub" id="previewBirthdayName">
-              Someone wonderful. ❤️
-            </div>
-
-          </div>
-
+        <div class="phoneScene" data-preview="3">
+          <div class="sceneBg"><div class="sceneBlob one"></div><div class="sceneBlob two"></div></div>
+          <span class="sticker s1">🎈</span><span class="sticker s2">💕</span><span class="sticker s3">🌷</span><span class="sticker s4">✦</span>
+          <div class="sceneContent"><div class="sceneEmoji">🎂</div><div class="sceneTitle">Happy Birthday</div><div class="sceneSub" id="previewBirthdayName">Someone special ❤️</div></div>
         </div>
 
-
-        <!-- Scene 5 -->
-        <div class="phoneScene" data-scene="4">
-
-          <div class="sceneBg">
-            <div class="sceneBlob one"></div>
-            <div class="sceneBlob two"></div>
-          </div>
-
-          <span class="sticker s1">🌸</span>
-          <span class="sticker s2">♡</span>
-          <span class="sticker s3">🌷</span>
-          <span class="sticker s4">✦</span>
-
-          <div class="sceneContent">
-
-            <div class="catFlower">🐱🌷</div>
-
-            <div class="sceneTitle" style="font-size:30px;">
-              This little flower<br>
-              is for you.
-            </div>
-
-            <div class="sceneSub">
-              Because you deserve one. ❤️
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <!-- Scene 6 -->
-        <div class="phoneScene" data-scene="5">
-
-          <div class="sceneBg">
-            <div class="sceneBlob one"></div>
-            <div class="sceneBlob two"></div>
-          </div>
-
-          <div class="sceneContent">
-
-            <div class="dancer">🐼</div>
-
-            <div class="sceneTitle" style="font-size:31px;">
-              Okay… enough emotions.
-            </div>
-
-            <div class="sceneSub">
-              Time for a tiny dance break. 😂💃
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <!-- Scene 7 -->
-        <div class="phoneScene" data-scene="6">
-
-          <div class="sceneBg">
-            <div class="sceneBlob one"></div>
-            <div class="sceneBlob two"></div>
-          </div>
-
-          <span class="sticker s1">🥹</span>
-          <span class="sticker s2">🌷</span>
-          <span class="sticker s3">♡</span>
-          <span class="sticker s4">✨</span>
-
-          <div class="sceneContent">
-
-            <div class="catFlower">🥹🐱</div>
-
-            <div class="sceneTitle" style="font-size:30px;">
-              Don't cry…
-            </div>
-
-            <div class="sceneSub">
-              Today you're supposed to smile. ❤️
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <!-- Scene 8 -->
-        <div class="phoneScene" data-scene="7">
-
-          <div class="sceneBg">
-            <div class="sceneBlob one"></div>
-            <div class="sceneBlob two"></div>
-          </div>
-
-          <span class="sticker s1">😂</span>
-          <span class="sticker s2">✦</span>
-          <span class="sticker s3">♡</span>
-          <span class="sticker s4">✨</span>
-
-          <div class="sceneContent">
-
-            <div class="memeText" id="previewMeme">
-              POV: The cutest person just leveled up 😂
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <!-- Scene 9 -->
-        <div class="phoneScene" data-scene="8">
-
-          <div class="sceneBg">
-            <div class="sceneBlob one"></div>
-            <div class="sceneBlob two"></div>
-          </div>
-
-          <span class="sticker s1">📸</span>
-          <span class="sticker s2">🌸</span>
-          <span class="sticker s3">✦</span>
-          <span class="sticker s4">♡</span>
-
-          <div class="sceneContent">
-
-            <div class="script">A little memory</div>
-
-            <div class="collage" id="previewCollage">
-            </div>
-
-            <div class="sceneCaption">
-              Some moments are worth keeping forever.
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <!-- Scene 10 -->
-        <div class="phoneScene" data-scene="9">
-
-          <div class="sceneBg">
-            <div class="sceneBlob one"></div>
-            <div class="sceneBlob two"></div>
-          </div>
-
-          <span class="sticker s1">🌸</span>
-          <span class="sticker s2">✦</span>
-          <span class="sticker s3">🌷</span>
-          <span class="sticker s4">♡</span>
-
-          <div class="sceneContent">
-
-            <div class="script">One last thing</div>
-
-            <div class="sceneTitle">
-              <span id="previewMessageTitle">
-                You are loved.
-              </span>
-            </div>
-
-            <div class="sceneSub" id="previewFinalMessage">
-              Your final message will appear here.
-            </div>
-
-          </div>
-
-        </div>
+        <div class="phoneScene" data-preview="4"><div class="sceneBg"><div class="sceneBlob one"></div><div class="sceneBlob two"></div></div><div class="sceneContent"><div class="cat">🐱🌷</div><div class="sceneTitle" style="font-size:30px">This little flower<br>is for you.</div><div class="sceneSub">Because you deserve one. ❤️</div></div></div>
+        <div class="phoneScene" data-preview="5"><div class="sceneBg"><div class="sceneBlob one"></div><div class="sceneBlob two"></div></div><div class="sceneContent"><div class="dance">🐼</div><div class="sceneTitle" style="font-size:30px">Dance break 😂</div><div class="sceneSub">Someone had to make you smile.</div></div></div>
+        <div class="phoneScene" data-preview="6"><div class="sceneBg"><div class="sceneBlob one"></div><div class="sceneBlob two"></div></div><div class="sceneContent"><div class="cat">🥹🐱🌷</div><div class="sceneTitle" style="font-size:30px">Don't cry…</div><div class="sceneSub">Today you're supposed to smile. ❤️</div></div></div>
+        <div class="phoneScene" data-preview="7"><div class="sceneBg"><div class="sceneBlob one"></div><div class="sceneBlob two"></div></div><div class="sceneContent"><div class="meme" id="previewMeme">POV: The cutest person just leveled up 😂</div></div></div>
+        <div class="phoneScene" data-preview="8"><div class="sceneBg"><div class="sceneBlob one"></div><div class="sceneBlob two"></div></div><div class="sceneContent"><div class="script">One little memory</div><div class="collage" id="previewCollage"></div><div class="sceneCaption">Some moments are worth keeping forever. ❤️</div></div></div>
+        <div class="phoneScene" data-preview="9"><div class="sceneBg"><div class="sceneBlob one"></div><div class="sceneBlob two"></div></div><div class="sceneContent" id="previewCustom"></div></div>
+        <div class="phoneScene" data-preview="10"><div class="sceneBg"><div class="sceneBlob one"></div><div class="sceneBlob two"></div></div><div class="sceneContent"><div class="finalCard"><h3 id="previewFinalTitle">Happy Birthday ❤️</h3><p id="previewEnding">Your final message will appear here.</p></div></div></div>
 
       </div>
-
     </div>
-
   </div>
-
 </section>
 
+<section id="success">
+  <div class="successIcon">✨</div>
+  <h2>Your Wishly is ready!</h2>
+  <p>The payment, coupon, Supabase and real share-link system will be connected after the experience flow is locked.</p>
+</section>
 
-<!-- =========================
-     EXPERIENCE
-========================= -->
+<footer>© 2026 Wishly — Made with ❤️</footer>
+</div>
 
+
+<!-- FULLSCREEN RECIPIENT EXPERIENCE -->
 <section id="experience">
+  <div class="expShell">
 
-  <div class="experienceShell">
-
-    <div class="experienceTop">
-
-      <div class="experienceBrand">
-        Wishly ✨
+    <div class="expTop">
+      <div class="expBrand">Wishly ✨</div>
+      <div style="display:flex;gap:7px;align-items:center">
+        <div class="audioHint" id="audioHint">♫ Music ready</div>
+        <button class="closeExp" id="closeExperience">✕</button>
       </div>
-
-      <div style="display:flex;gap:7px;align-items:center;">
-
-        <div class="audioHint" id="audioHint">
-          ♫ Music ready
-        </div>
-
-        <button class="closeExperience" id="closeExperience">
-          ✕
-        </button>
-
-      </div>
-
     </div>
 
-
-    <div class="expProgress" id="expProgress"></div>
-
-
-    <div class="experienceSlides" id="experienceSlides">
-
-      <!-- dynamically rendered -->
-    </div>
-
+    <div class="expBars" id="expBars"></div>
+    <div class="expSlides" id="expSlides"></div>
 
     <div class="expNav">
-
-      <button class="expBtn" id="expPrev">
-        ←
-      </button>
-
-      <button class="expBtn" id="expNext">
-        Continue ❤️
-      </button>
-
+      <button class="expBtn" id="prevExp">←</button>
+      <button class="expBtn" id="nextExp">Continue ❤️</button>
     </div>
 
   </div>
-
 </section>
-
-
-<footer>
-  © 2026 Wishly — Make moments unforgettable ❤️
-</footer>
-
 
 <audio id="musicPlayer" loop></audio>
 
-
 <script>
-/* =========================
-   STATE
-========================= */
-
-const state = {
-  category:"Birthday",
-  step:0,
-  name:"Someone special",
-  message:"",
-  memoryLine:"",
-  endingMessage:"",
-  finalTitle:"",
-  meme:"",
-  photos:[null,null,null,null],
-  captions:["","","",""],
-  extras:["cat"],
-  musicFile:null,
-  finalImage:null,
-  experienceStep:0
+const state={
+  category:"Birthday",step:0,name:"Someone special",message:"",memoryLine:"",endingMessage:"",
+  finalTitle:"",meme:"",photos:[null,null,null,null],captions:["","","",""],
+  extras:["cat"],customImage:null,customTitle:"",customSmall:"",customAnimation:"Float",
+  musicFile:null,musicChoice:"none",finalImage:null,expIndex:0,cameraStarted:false,blown:false
 };
 
-const categoryEmoji = {
-  Birthday:"🎂",
-  Anniversary:"💍",
-  Proposal:"💖",
-  Friendship:"👫",
-  Graduation:"🎓",
-  Congratulations:"🎉",
-  "Thank You":"💐",
-  Custom:"🎁"
-};
+const emoji={Birthday:"🎂",Anniversary:"💍",Proposal:"💖",Friendship:"👫",Graduation:"🎓",Congratulations:"🎉","Thank You":"💐",Custom:"🎁"};
+const $=id=>document.getElementById(id);
 
-
-/* =========================
-   ELEMENTS
-========================= */
-
-const home = document.getElementById("home");
-const creator = document.getElementById("creator");
-const creatorBadge = document.getElementById("creatorBadge");
-const track = document.getElementById("track");
-const dots = document.querySelectorAll(".dot");
-
-const nextBtn = document.getElementById("nextBtn");
-const backBtn = document.getElementById("backBtn");
-
-const previewName = document.getElementById("previewName");
-const previewBirthdayName =
-  document.getElementById("previewBirthdayName");
-
-const previewMeme =
-  document.getElementById("previewMeme");
-
-const previewMessageTitle =
-  document.getElementById("previewMessageTitle");
-
-const previewFinalMessage =
-  document.getElementById("previewFinalMessage");
-
-const previewCollage =
-  document.getElementById("previewCollage");
-
-const experience =
-  document.getElementById("experience");
-
-const experienceSlides =
-  document.getElementById("experienceSlides");
-
-const expProgress =
-  document.getElementById("expProgress");
-
-const expPrev =
-  document.getElementById("expPrev");
-
-const expNext =
-  document.getElementById("expNext");
-
-const musicPlayer =
-  document.getElementById("musicPlayer");
-
-const audioHint =
-  document.getElementById("audioHint");
-
-
-/* =========================
-   OPEN CREATOR
-========================= */
-
-function openCreator(category){
-  state.category = category || "Birthday";
-  state.step = 0;
-
-  creatorBadge.textContent =
-    `${categoryEmoji[state.category] || "✨"} ${state.category}`;
-
-  home.style.display = "none";
-  creator.classList.add("active");
-
-  updateStep();
-  updatePreview();
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
+function openCreator(category="Birthday"){
+  state.category=category;state.step=0;
+  $("creatorBadge").textContent=`${emoji[category]||"✨"} ${category}`;
+  $("home").style.display="none";$("creator").classList.add("active");
+  updateStep();updateMini();window.scrollTo({top:0,behavior:"smooth"});
 }
-
-
-/* =========================
-   CLOSE CREATOR
-========================= */
-
 function closeCreator(){
-  creator.classList.remove("active");
-  home.style.display = "block";
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
+  $("creator").classList.remove("active");$("home").style.display="block";
+  window.scrollTo({top:0,behavior:"smooth"});
 }
-
-
-/* =========================
-   CATEGORY EVENTS
-========================= */
-
-document.querySelectorAll(".category").forEach(card => {
-  card.addEventListener("click",()=>{
-    openCreator(card.dataset.category);
-  });
-});
-
-document.getElementById("heroStart").addEventListener("click",()=>{
-  openCreator("Birthday");
-});
-
-document.getElementById("createTop").addEventListener("click",()=>{
-  openCreator("Birthday");
-});
-
-document.getElementById("homeBtn").addEventListener("click",closeCreator);
-
-document.getElementById("logoHome").addEventListener("click",e=>{
-  e.preventDefault();
-  closeCreator();
-});
-
-document.getElementById("heroScroll").addEventListener("click",()=>{
-  document.getElementById("celebrations").scrollIntoView({
-    behavior:"smooth"
-  });
-});
-
-document.getElementById("cancelBtn").addEventListener("click",closeCreator);
-
-
-/* =========================
-   FORM STEP
-========================= */
+document.querySelectorAll(".category").forEach(card=>card.addEventListener("click",()=>openCreator(card.dataset.category)));
+$("heroStart").addEventListener("click",()=>openCreator("Birthday"));
+$("createTop").addEventListener("click",()=>openCreator("Birthday"));
+$("homeBtn").addEventListener("click",closeCreator);
+$("logoHome").addEventListener("click",e=>{e.preventDefault();closeCreator()});
+$("heroScroll").addEventListener("click",()=>$("celebrations").scrollIntoView({behavior:"smooth"}));
+$("cancelBtn").addEventListener("click",closeCreator);
 
 function updateStep(){
-
-  track.style.transform =
-    `translateX(-${state.step * 20}%)`;
-
-  dots.forEach((dot,index)=>{
-    dot.classList.toggle(
-      "active",
-      index <= state.step
-    );
-  });
-
-  backBtn.style.visibility =
-    state.step === 0 ? "hidden" : "visible";
-
-  nextBtn.textContent =
-    state.step === 4
-      ? "Preview Experience ✨"
-      : "Next →";
+  $("track").style.transform=`translateX(-${state.step*20}%)`;
+  document.querySelectorAll(".dot").forEach((d,i)=>d.classList.toggle("active",i<=state.step));
+  $("backBtn").style.visibility=state.step===0?"hidden":"visible";
+  $("nextBtn").textContent=state.step===4?"Preview Experience ✨":"Next →";
 }
-
-
-/* =========================
-   READ CREATOR DATA
-========================= */
-
-function readCreator(){
-
-  state.name =
-    document.getElementById("name").value.trim()
-    || "Someone special";
-
-  state.message =
-    document.getElementById("message").value.trim();
-
-  state.memoryLine =
-    document.getElementById("memoryLine").value.trim();
-
-  state.endingMessage =
-    document.getElementById("endingMessage").value.trim();
-
-  state.finalTitle =
-    document.getElementById("finalTitle").value.trim();
-
-  state.meme =
-    document.getElementById("memeText").value.trim();
-
-  document.querySelectorAll("[data-caption]").forEach(input=>{
-    state.captions[
-      Number(input.dataset.caption)
-    ] = input.value.trim();
-  });
+function readForm(){
+  state.name=$("name").value.trim()||"Someone special";
+  state.message=$("message").value.trim();
+  state.memoryLine=$("memoryLine").value.trim();
+  state.endingMessage=$("endingMessage").value.trim();
+  state.finalTitle=$("finalTitle").value.trim();
+  state.meme=$("memeText").value.trim();
+  state.customTitle=$("customTitle").value.trim();
+  state.customSmall=$("customSmall").value.trim();
+  state.customAnimation=$("customAnimation").value;
+  document.querySelectorAll("[data-caption]").forEach(i=>state.captions[Number(i.dataset.caption)]=i.value.trim());
 }
-
-
-/* =========================
-   NEXT / BACK
-========================= */
-
-nextBtn.addEventListener("click",()=>{
-
-  readCreator();
-  updatePreview();
-
-  if(state.step < 4){
-    state.step++;
-    updateStep();
-
-    window.scrollTo({
-      top:creator.offsetTop - 10,
-      behavior:"smooth"
-    });
-
-    return;
-  }
-
-  openExperience();
+$("nextBtn").addEventListener("click",()=>{
+  readForm();
+  if(state.step<4){state.step++;updateStep();updateMini();window.scrollTo({top:$("creator").offsetTop-10,behavior:"smooth"});}
+  else openExperience();
 });
-
-backBtn.addEventListener("click",()=>{
-
-  if(state.step > 0){
-    state.step--;
-
-    updateStep();
-
-    window.scrollTo({
-      top:creator.offsetTop - 10,
-      behavior:"smooth"
-    });
-  }
+$("backBtn").addEventListener("click",()=>{
+  if(state.step>0){state.step--;updateStep();updateMini();window.scrollTo({top:$("creator").offsetTop-10,behavior:"smooth"});}
 });
-
-
-/* =========================
-   LIVE PREVIEW
-========================= */
-
-function updatePreview(){
-
-  readCreator();
-
-  previewName.textContent =
-    state.name;
-
-  previewBirthdayName.textContent =
-    `${state.name} ❤️`;
-
-  previewMeme.textContent =
-    state.meme ||
-    "POV: The cutest person just leveled up 😂";
-
-  previewMessageTitle.textContent =
-    state.finalTitle ||
-    "You are loved. ❤️";
-
-  previewFinalMessage.textContent =
-    state.endingMessage ||
-    "Your final message will appear here.";
-
-  renderCollage();
-}
-
-
-function renderCollage(){
-
-  previewCollage.innerHTML = "";
-
-  state.photos
-    .filter(Boolean)
-    .slice(0,4)
-    .forEach(file=>{
-
-      const img =
-        document.createElement("img");
-
-      img.src =
-        URL.createObjectURL(file);
-
-      img.alt =
-        "Memory";
-
-      previewCollage.appendChild(img);
-    });
-
-}
-
-
-/* =========================
-   PHOTO UPLOADS
-========================= */
 
 document.querySelectorAll("[data-photo]").forEach(input=>{
-
   input.addEventListener("change",e=>{
-
-    const file =
-      e.target.files[0];
-
-    if(!file){
-      return;
-    }
-
-    const index =
-      Number(input.dataset.photo);
-
-    state.photos[index] =
-      file;
-
-    const preview =
-      document.querySelector(
-        `[data-preview="${index}"]`
-      );
-
-    preview.src =
-      URL.createObjectURL(file);
-
-    preview.style.display =
-      "block";
-
-    updatePreview();
+    const file=e.target.files[0];if(!file)return;
+    const i=Number(input.dataset.photo);state.photos[i]=file;
+    const img=document.querySelector(`[data-preview="${i}"]`);
+    img.src=URL.createObjectURL(file);img.style.display="block";updateMini();
   });
-
 });
-
-
-/* =========================
-   FINAL IMAGE
-========================= */
-
-document.getElementById("finalImage")
-  .addEventListener("change",e=>{
-
-    const file =
-      e.target.files[0];
-
-    if(!file){
-      return;
-    }
-
-    state.finalImage =
-      file;
-
-    const preview =
-      document.getElementById("finalPreview");
-
-    preview.src =
-      URL.createObjectURL(file);
-
-    preview.style.display =
-      "block";
-  });
-
-
-/* =========================
-   EXTRA MAGIC
-========================= */
-
+$("finalImage").addEventListener("change",e=>{
+  const file=e.target.files[0];if(!file)return;
+  state.finalImage=file;$("finalPreview").src=URL.createObjectURL(file);$("finalPreview").style.display="block";
+});
+$("customImage").addEventListener("change",e=>{
+  const file=e.target.files[0];if(!file)return;state.customImage=file;updateMini();
+});
 document.querySelectorAll(".extraCard").forEach(card=>{
-
   card.addEventListener("click",()=>{
-
-    const extra =
-      card.dataset.extra;
-
-    card.classList.toggle("selected");
-
-    if(card.classList.contains("selected")){
-
-      if(!state.extras.includes(extra)){
-        state.extras.push(extra);
-      }
-
-    }else{
-
-      state.extras =
-        state.extras.filter(
-          item=>item !== extra
-        );
-    }
-
+    const x=card.dataset.extra;card.classList.toggle("selected");
+    if(card.classList.contains("selected")){if(!state.extras.includes(x))state.extras.push(x);}
+    else state.extras=state.extras.filter(v=>v!==x);
+    updateMini();
   });
-
 });
-
-
-/* =========================
-   MUSIC
-========================= */
-
-document.getElementById("musicFile")
-  .addEventListener("change",e=>{
-
-    const file =
-      e.target.files[0];
-
-    if(!file){
-      return;
-    }
-
-    state.musicFile =
-      file;
-
-    musicPlayer.src =
-      URL.createObjectURL(file);
-
-    audioHint.textContent =
-      "♫ Music selected";
+document.querySelectorAll(".musicCard").forEach(card=>{
+  card.addEventListener("click",()=>{
+    document.querySelectorAll(".musicCard").forEach(x=>x.classList.remove("selected"));
+    card.classList.add("selected");state.musicChoice=card.dataset.music;
   });
+});
+$("musicFile").addEventListener("change",e=>{
+  const file=e.target.files[0];if(!file)return;
+  state.musicFile=file;state.musicChoice="custom";$("audioHint").textContent="♫ Your music is ready";
+});
+["name","message","memoryLine","endingMessage","finalTitle","memeText","customTitle","customSmall","customAnimation"].forEach(id=>$(id).addEventListener("input",updateMini));
 
-
-/* =========================
-   EXPERIENCE SLIDES
-========================= */
-
-function buildExperienceSlides(){
-
-  const slides = [];
-
-  /* Intro */
-  slides.push({
-    type:"intro"
+function updateMini(){
+  readForm();
+  $("previewName").textContent=state.name;
+  $("previewBirthdayName").textContent=`${state.name} ❤️`;
+  $("previewMeme").textContent=state.meme||"POV: The cutest person just leveled up 😂";
+  $("previewFinalTitle").textContent=state.finalTitle||"Happy Birthday ❤️";
+  $("previewEnding").textContent=state.endingMessage||"Your final message will appear here.";
+  const c=$("previewCollage");c.innerHTML="";
+  state.photos.filter(Boolean).slice(0,4).forEach(f=>{
+    const img=document.createElement("img");img.src=URL.createObjectURL(f);img.alt="Memory";c.appendChild(img);
   });
-
-  /* Name */
-  slides.push({
-    type:"name"
-  });
-
-  /* Celebration */
-  slides.push({
-    type:"celebration"
-  });
-
-  /* Message */
-  slides.push({
-    type:"message"
-  });
-
-  /* Extra magic */
-
-  if(state.extras.includes("cat")){
-    slides.push({
-      type:"cat"
-    });
+  if(state.customImage){
+    $("previewCustom").innerHTML=`
+      <div class="script">Your own little moment</div>
+      <img class="scenePhoto" src="${URL.createObjectURL(state.customImage)}" alt="Custom slide">
+      <div class="sceneTitle" style="font-size:28px">${escapeHTML(state.customTitle||"Something just for you")}</div>
+      <div class="sceneSub">${escapeHTML(state.customSmall||"An inside joke ❤️")}</div>`;
+  }else{
+    $("previewCustom").innerHTML=`<div class="script">Your own little moment</div><div class="sceneEmoji">✨</div><div class="sceneTitle" style="font-size:28px">Add your own meme or sticker</div><div class="sceneSub">Personalize this slide.</div>`;
   }
-
-  if(state.extras.includes("dance")){
-    slides.push({
-      type:"dance"
-    });
-  }
-
-  if(state.extras.includes("emotional")){
-    slides.push({
-      type:"emotional"
-    });
-  }
-
-  if(state.extras.includes("meme")){
-    slides.push({
-      type:"meme"
-    });
-  }
-
-  if(state.extras.includes("hug")){
-    slides.push({
-      type:"hug"
-    });
-  }
-
-  if(state.extras.includes("flowers")){
-    slides.push({
-      type:"flowers"
-    });
-  }
-
-  /* Memories */
-
-  state.photos
-    .filter(Boolean)
-    .forEach((file,index)=>{
-      slides.push({
-        type:"photo",
-        file,
-        caption:
-          state.captions[index]
-          || "A little moment worth keeping."
-      });
-    });
-
-  /* Collage */
-  if(state.photos.filter(Boolean).length >= 2){
-    slides.push({
-      type:"collage"
-    });
-  }
-
-  /* Final */
-  slides.push({
-    type:"final"
-  });
-
-  return slides;
 }
 
+function escapeHTML(v){return String(v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
 
-function slideHTML(slide){
 
-  const common = `
-    <div class="expBackground">
-      <div class="sceneBlob one"></div>
-      <div class="sceneBlob two"></div>
+/* ==============================
+   RECIPIENT EXPERIENCE
+============================== */
+
+function buildSlides(){
+  const s=[
+    {type:"intro"},
+    {type:"name"},
+    {type:"candle"},
+    {type:"birthday"},
+    {type:"message"}
+  ];
+  if(state.extras.includes("cat"))s.push({type:"cat"});
+  if(state.extras.includes("dance"))s.push({type:"dance"});
+  if(state.extras.includes("emotional"))s.push({type:"emotional"});
+  if(state.extras.includes("meme"))s.push({type:"meme"});
+  if(state.extras.includes("hug"))s.push({type:"hug"});
+  if(state.extras.includes("flowers"))s.push({type:"flowers"});
+  state.photos.filter(Boolean).forEach((file,i)=>s.push({type:"photo",file,caption:state.captions[i]||"A little memory worth keeping. ❤️"}));
+  if(state.photos.filter(Boolean).length>=2)s.push({type:"collage"});
+  if(state.customImage)s.push({type:"custom",file:state.customImage,title:state.customTitle,small:state.customSmall,animation:state.customAnimation});
+  s.push({type:"final"});
+  return s;
+}
+
+function commonBg(){return `<div class="expBg"><div class="expBlob a"></div><div class="expBlob b"></div></div>`}
+
+function slideHTML(slide,index){
+  const bg=commonBg();
+
+  if(slide.type==="intro")return`${bg}<div class="expContent">
+    <div class="sticker s1">✦</div><div class="sticker s2">🌸</div><div class="sticker s3">♡</div><div class="sticker s4">✧</div>
+    <div class="script">A little surprise</div><div class="expTitle">Someone made<br>something for you.</div>
+    <div class="expSub">Stay for a little story made just for you. ❤️</div><div class="expEmoji">💌</div></div>`;
+
+  if(slide.type==="name")return`${bg}<div class="expContent"><div class="expEmoji">✨</div>
+    <div class="expTitle">${escapeHTML(state.name)}</div><div class="expSub">Today is all about you.</div></div>`;
+
+  if(slide.type==="candle")return`${bg}<div class="expContent">
+    <div class="sticker s1">🌸</div><div class="sticker s2">✦</div><div class="sticker s3">♡</div><div class="sticker s4">🌷</div>
+    <div class="script">Before anything else…</div><div class="expTitle">Are you ready?</div>
+    <div class="expSub">Make a wish, then blow the candles. 💨</div>
+    <div class="candleScene" id="candleVisual">🕯️🕯️🕯️</div>
+    <div class="blowStatus" id="blowStatus">Tap “I'm Ready” to open the camera.</div>
+    <button class="expBtn" style="margin-top:12px" id="cameraStartBtn">I'm Ready 💨</button>
+    <div class="cameraBox" id="cameraBox" style="display:none">
+      <video id="cameraVideo" autoplay playsinline muted></video>
+      <div class="candleOverlay" id="candleOverlay">🕯️🕯️🕯️</div>
+      <div class="blowMeter"><span id="blowMeterFill"></span></div>
     </div>
-  `;
+  </div>`;
 
-  if(slide.type === "intro"){
+  if(slide.type==="birthday")return`${bg}<div class="expContent">
+    <div class="sticker s1">🎈</div><div class="sticker s2">💕</div><div class="sticker s3">🌷</div><div class="sticker s4">✦</div>
+    <div class="expEmoji">${emoji[state.category]||"🎉"}</div><div class="expTitle">${state.category}</div>
+    <div class="expSub">${escapeHTML(state.name)} ❤️</div></div>`;
 
-    return `
-      ${common}
-      <div class="expContent">
+  if(slide.type==="message")return`${bg}<div class="expContent"><div class="softCardExp">
+    <div class="script">A little something from the heart</div>
+    <div class="sceneTitle" style="font-size:29px">${escapeHTML(state.memoryLine||"Wait…")}</div>
+    <p>${escapeHTML(state.message||"You are special. ❤️")}</p></div></div>`;
 
-        <div class="sticker s1">✦</div>
-        <div class="sticker s2">🌸</div>
-        <div class="sticker s3">♡</div>
-        <div class="sticker s4">✧</div>
+  if(slide.type==="cat")return`${bg}<div class="expContent"><div class="catBig">🐱🌷</div><div class="expTitle" style="font-size:38px">This little flower<br>is for you.</div><div class="expSub">Because you deserve one. ❤️</div></div>`;
+  if(slide.type==="dance")return`${bg}<div class="expContent"><div class="danceBig">🐼</div><div class="expTitle" style="font-size:40px">Okay… enough emotions.</div><div class="expSub">Time for a tiny dance break. 😂💃</div></div>`;
+  if(slide.type==="emotional")return`${bg}<div class="expContent"><div class="catBig">🥹🐱🌷</div><div class="expTitle" style="font-size:40px">Don't cry…</div><div class="expSub">Today you're supposed to smile. ❤️</div></div>`;
+  if(slide.type==="meme")return`${bg}<div class="expContent"><div class="memeBig">${escapeHTML(state.meme||"POV: The cutest person just leveled up 😂")}</div></div>`;
+  if(slide.type==="hug")return`${bg}<div class="expContent"><div class="hugBig">🤗💗</div><div class="expTitle" style="font-size:40px">Sending you a<br>big virtual hug.</div></div>`;
+  if(slide.type==="flowers")return`${bg}<div class="expContent"><div class="expEmoji">🌸🌷🌹🌼</div><div class="expTitle" style="font-size:38px">A tiny garden<br>for a lovely person.</div><div class="expSub">Some people simply deserve flowers.</div></div>`;
 
-        <div class="script">A little surprise</div>
+  if(slide.type==="photo")return`${bg}<div class="expContent"><div class="script">A little memory</div>
+    <img class="expPhoto" src="${URL.createObjectURL(slide.file)}" alt="Memory">
+    <div class="expCaption">${escapeHTML(slide.caption)}</div></div>`;
 
-        <div class="sceneTitle">
-          Someone made<br>
-          something for you.
-        </div>
-
-        <div class="sceneSub">
-          Tap continue when you're ready.
-        </div>
-
-        <div class="sceneEmoji">💌</div>
-
-      </div>
-    `;
+  if(slide.type==="collage"){
+    const imgs=state.photos.filter(Boolean).slice(0,4).map(f=>`<img src="${URL.createObjectURL(f)}" alt="Memory">`).join("");
+    return`${bg}<div class="expContent"><div class="script">Our little collection</div><div class="collage">${imgs}</div><div class="expCaption">Some moments are worth keeping forever. ❤️</div></div>`;
   }
 
-  if(slide.type === "name"){
+  if(slide.type==="custom")return`${bg}<div class="expContent">
+    <div class="script">Your own little moment</div>
+    <img class="expPhoto" src="${URL.createObjectURL(slide.file)}" alt="Custom">
+    <div class="expTitle" style="font-size:38px">${escapeHTML(slide.title||"Something just for you")}</div>
+    <div class="expSub">${escapeHTML(slide.small||"An inside joke ❤️")}</div></div>`;
 
-    return `
-      ${common}
-
-      <div class="expContent">
-
-        <div class="sceneEmoji">✨</div>
-
-        <div class="expTitle">
-          ${escapeHTML(state.name)}
-        </div>
-
-        <div class="expSub">
-          Today is all about you. ❤️
-        </div>
-
-      </div>
-    `;
+  if(slide.type==="final"){
+    const image=state.finalImage?`<img class="finalImage" src="${URL.createObjectURL(state.finalImage)}" alt="Final">`:"";
+    return`${bg}<div class="expContent">${image}<div class="finalCard" style="margin-top:${image?"22px":"0"}">
+      <h3>${escapeHTML(state.finalTitle||"Happy Birthday, beautiful soul. ❤️")}</h3>
+      <p>${escapeHTML(state.endingMessage||"Thank you for being you. ❤️")}</p>
+      <div style="margin-top:15px;color:#a9798d;font-size:13px">Made with love on Wishly ✨</div>
+    </div></div>`;
   }
-
-  if(slide.type === "celebration"){
-
-    return `
-      ${common}
-
-      <div class="expContent">
-
-        <div class="sticker s1">🎈</div>
-        <div class="sticker s2">💕</div>
-        <div class="sticker s3">🌷</div>
-        <div class="sticker s4">✦</div>
-
-        <div class="sceneEmoji">
-          ${categoryEmoji[state.category] || "✨"}
-        </div>
-
-        <div class="expTitle">
-          ${state.category}
-        </div>
-
-        <div class="expSub">
-          This moment was made just for you.
-        </div>
-
-      </div>
-    `;
-  }
-
-  if(slide.type === "message"){
-
-    return `
-      ${common}
-
-      <div class="expContent">
-
-        <div class="softCard">
-
-          <div class="script">
-            A little something from the heart
-          </div>
-
-          <div class="sceneTitle" style="font-size:31px;">
-            ${escapeHTML(state.memoryLine || "Wait…")}
-          </div>
-
-          <div class="expSub" style="white-space:pre-wrap;">
-            ${escapeHTML(state.message || "You are special. ❤️")}
-          </div>
-
-        </div>
-
-      </div>
-    `;
-  }
-
-  if(slide.type === "cat"){
-
-    return `
-      ${common}
-
-      <div class="expContent">
-
-        <div class="flowerCat">
-          🐱🌷
-        </div>
-
-        <div class="sceneTitle" style="font-size:32px;">
-          This little flower<br>
-          is for you.
-        </div>
-
-        <div class="expSub">
-          Because you deserve one. ❤️
-        </div>
-
-      </div>
-    `;
-  }
-
-  if(slide.type === "dance"){
-
-    return `
-      ${common}
-
-      <div class="expContent">
-
-        <div class="dancer">
-          🐼
-        </div>
-
-        <div class="sceneTitle" style="font-size:32px;">
-          Okay… enough emotions.
-        </div>
-
-        <div class="expSub">
-          Time for a tiny dance break. 😂💃
-        </div>
-
-      </div>
-    `;
-  }
-
-  if(slide.type === "emotional"){
-
-    return `
-      ${common}
-
-      <div class="expContent">
-
-        <div class="flowerCat">
-          🥹🐱🌷
-        </div>
-
-        <div class="sceneTitle" style="font-size:34px;">
-          Don't cry…
-        </div>
-
-        <div class="expSub">
-          Today you're supposed to smile. ❤️
-        </div>
-
-      </div>
-    `;
-  }
-
-  if(slide.type === "meme"){
-
-    return `
-      ${common}
-
-      <div class="expContent">
-
-        <div class="memeText">
-          ${escapeHTML(
-            state.meme ||
-            "POV: The cutest person just leveled up 😂"
-          )}
-        </div>
-
-      </div>
-    `;
-  }
-
-  if(slide.type === "hug"){
-
-    return `
-      ${common}
-
-      <div class="expContent">
-
-        <div class="hug">
-          🤗💗
-        </div>
-
-        <div class="sceneTitle" style="font-size:34px;">
-          Sending you a<br>
-          big virtual hug.
-        </div>
-
-      </div>
-    `;
-  }
-
-  if(slide.type === "flowers"){
-
-    return `
-      ${common}
-
-      <div class="expContent">
-
-        <div class="sceneEmoji">
-          🌸🌷🌹🌼
-        </div>
-
-        <div class="sceneTitle" style="font-size:32px;">
-          A tiny garden<br>
-          for a lovely person.
-        </div>
-
-        <div class="expSub">
-          Some people simply deserve flowers.
-        </div>
-
-      </div>
-    `;
-  }
-
-  if(slide.type === "photo"){
-
-    return `
-      ${common}
-
-      <div class="expContent">
-
-        <div class="script">
-          A little memory
-        </div>
-
-        <img
-          class="experiencePhoto"
-          src="${URL.createObjectURL(slide.file)}"
-          alt="Memory"
-        >
-
-        <div class="sceneCaption">
-          ${escapeHTML(slide.caption)}
-        </div>
-
-      </div>
-    `;
-  }
-
-  if(slide.type === "collage"){
-
-    const photos =
-      state.photos
-        .filter(Boolean)
-        .slice(0,4)
-        .map(
-          file =>
-            `<img src="${URL.createObjectURL(file)}" alt="Memory">`
-        )
-        .join("");
-
-    return `
-      ${common}
-
-      <div class="expContent">
-
-        <div class="script">
-          Our little collection
-        </div>
-
-        <div class="collage">
-          ${photos}
-        </div>
-
-        <div class="sceneCaption">
-          Some moments are worth keeping forever. ❤️
-        </div>
-
-      </div>
-    `;
-  }
-
-  if(slide.type === "final"){
-
-    let image = "";
-
-    if(state.finalImage){
-      image = `
-        <img
-          class="experiencePhoto"
-          src="${URL.createObjectURL(state.finalImage)}"
-          alt="Final"
-        >
-      `;
-    }
-
-    return `
-      ${common}
-
-      <div class="expContent">
-
-        ${image}
-
-        <div class="finalLetter" style="margin-top:${image ? "22px" : "0"};">
-
-          <h3>
-            ${escapeHTML(
-              state.finalTitle ||
-              "Happy Birthday, you beautiful soul. ❤️"
-            )}
-          </h3>
-
-          <p>
-            ${escapeHTML(
-              state.endingMessage ||
-              "Thank you for being you. ❤️"
-            )}
-          </p>
-
-          <div style="margin-top:16px;font-size:14px;color:#a37b8d;">
-            Made with love on Wishly ✨
-          </div>
-
-        </div>
-
-      </div>
-    `;
-  }
-
   return "";
 }
 
+let cameraStream=null,audioContext=null,analyser=null,audioSource=null,blowRAF=null,blowHits=0;
 
-function escapeHTML(value){
-  return String(value)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
+async function startCandleCamera(){
+  const box=document.getElementById("cameraBox"), video=document.getElementById("cameraVideo"), status=document.getElementById("blowStatus");
+  if(!box||!video)return;
+  try{
+    cameraStream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+    video.srcObject=cameraStream;
+    box.style.display="block";
+    status.textContent="Make a wish… then gently blow toward the camera. 💨";
+
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC){manualBlowFallback();return;}
+    audioContext=new AC();
+    if(audioContext.state==="suspended")await audioContext.resume();
+
+    audioSource=audioContext.createMediaStreamSource(cameraStream);
+    analyser=audioContext.createAnalyser();
+    analyser.fftSize=512;
+    analyser.smoothingTimeConstant=.65;
+    audioSource.connect(analyser);
+
+    const data=new Uint8Array(analyser.fftSize);
+    const fill=document.getElementById("blowMeterFill");
+
+    const loop=()=>{
+      if(!analyser||state.blown)return;
+      analyser.getByteTimeDomainData(data);
+      let energy=0;
+      for(const value of data){
+        const x=(value-128)/128;
+        energy+=x*x;
+      }
+      const rms=Math.sqrt(energy/data.length);
+      const pct=Math.max(0,Math.min(100,(rms-.015)*1500));
+      if(fill)fill.style.width=pct+"%";
+
+      if(rms>.075)blowHits++;else blowHits=Math.max(0,blowHits-1);
+
+      if(blowHits>=5){
+        state.blown=true;
+        candlesOut();
+        return;
+      }
+      blowRAF=requestAnimationFrame(loop);
+    };
+    blowRAF=requestAnimationFrame(loop);
+  }catch(err){
+    box.style.display="none";
+    status.textContent="Camera/mic permission was blocked. You can use the manual button below.";
+    manualBlowFallback();
+  }
 }
 
+function manualBlowFallback(){
+  const b=document.createElement("button");
+  b.className="expBtn";
+  b.id="manualBlow";
+  b.textContent="I blew the candles 💨";
+  b.style.marginTop="10px";
+  const status=document.getElementById("blowStatus");
+  status.parentElement.appendChild(b);
+  b.addEventListener("click",()=>{state.blown=true;candlesOut();});
+}
+
+function candlesOut(){
+  const status=document.getElementById("blowStatus");
+  const visual=document.getElementById("candleVisual");
+  const overlay=document.getElementById("candleOverlay");
+  if(visual)visual.textContent="✨💨✨";
+  if(overlay)overlay.textContent="💨✨";
+  if(status)status.textContent="Candles are out! 🎉";
+  setTimeout(()=>{
+    const slides=document.querySelectorAll(".expSlide");
+    if(state.expIndex<slides.length-1){
+      state.expIndex++;
+      showExpSlide();
+    }
+  },900);
+}
+
+function stopCamera(){
+  if(blowRAF)cancelAnimationFrame(blowRAF);
+  blowRAF=null;
+  if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}
+  if(audioSource){try{audioSource.disconnect()}catch{} audioSource=null;}
+  if(audioContext){try{audioContext.close()}catch{} audioContext=null;}
+  analyser=null;
+}
 
 function renderExperience(){
+  const slides=buildSlides();
+  $("expSlides").innerHTML=slides.map((s,i)=>`<div class="expSlide" data-exp-index="${i}">${slideHTML(s,i)}</div>`).join("");
+  $("expBars").innerHTML=slides.map((_,i)=>`<span class="${i===0?"active":""}"></span>`).join("");
+  state.expIndex=0;state.blown=false;showExpSlide();
 
-  const slides =
-    buildExperienceSlides();
+  const cameraButton=document.getElementById("cameraStartBtn");
+  if(cameraButton)cameraButton.addEventListener("click",startCandleCamera);
 
-  experienceSlides.innerHTML =
-    slides
-      .map(
-        slide =>
-          `<div class="expSlide">${slideHTML(slide)}</div>`
-      )
-      .join("");
-
-  const slideEls =
-    experienceSlides.querySelectorAll(".expSlide");
-
-  expProgress.innerHTML =
-    slides
-      .map(
-        (_,i)=>
-          `<span class="${i===0?"active":""}"></span>`
-      )
-      .join("");
-
-  state.experienceStep = 0;
-
-  setExperienceSlide();
-
-  /*
-    Music can start after the user has
-    interacted with the page.
-  */
+  const player=$("musicPlayer");
   if(state.musicFile){
-    musicPlayer.play()
-      .then(()=>{
-        audioHint.textContent="♫ Music playing";
-      })
-      .catch(()=>{
-        audioHint.textContent="Tap Continue for music ♫";
-      });
+    player.src=URL.createObjectURL(state.musicFile);
+    player.play().then(()=>$("audioHint").textContent="♫ Music playing").catch(()=>$("audioHint").textContent="♫ Tap Continue for music");
+  }else{
+    $("audioHint").textContent="♫ Music ready";
   }
-
 }
 
+function showExpSlide(){
+  const slides=document.querySelectorAll(".expSlide");
+  const bars=document.querySelectorAll("#expBars span");
+  slides.forEach((s,i)=>s.classList.toggle("active",i===state.expIndex));
+  bars.forEach((b,i)=>b.classList.toggle("active",i<=state.expIndex));
 
-function setExperienceSlide(){
+  $("prevExp").style.opacity=state.expIndex===0?".45":"1";
+  $("nextExp").style.display=state.expIndex===2 && !state.blown?"none":"block";
+  $("nextExp").textContent=state.expIndex===slides.length-1?"Close ✨":"Continue ❤️";
 
-  const slides =
-    experienceSlides.querySelectorAll(".expSlide");
-
-  slides.forEach((slide,index)=>{
-    slide.classList.toggle(
-      "active",
-      index === state.experienceStep
-    );
-  });
-
-  expProgress
-    .querySelectorAll("span")
-    .forEach((bar,index)=>{
-      bar.classList.toggle(
-        "active",
-        index <= state.experienceStep
-      );
-    });
-
-  expPrev.style.opacity =
-    state.experienceStep === 0 ? ".45" : "1";
-
-  expNext.textContent =
-    state.experienceStep === slides.length - 1
-      ? "Close ✨"
-      : "Continue ❤️";
-
+  if(state.expIndex!==2)stopCamera();
 }
-
 
 function openExperience(){
-
-  readCreator();
-
-  experience.classList.add("active");
-
-  document.body.style.overflow =
-    "hidden";
-
+  readForm();
+  $("experience").classList.add("active");
+  document.body.style.overflow="hidden";
   renderExperience();
-
 }
-
 
 function closeExperience(){
-
-  experience.classList.remove("active");
-
-  document.body.style.overflow =
-    "";
-
-  musicPlayer.pause();
-
+  stopCamera();
+  $("experience").classList.remove("active");
+  document.body.style.overflow="";
+  $("musicPlayer").pause();
 }
 
-
-expNext.addEventListener("click",()=>{
-
-  const slides =
-    experienceSlides.querySelectorAll(".expSlide");
-
-  if(state.experienceStep < slides.length - 1){
-
-    state.experienceStep++;
-
-    setExperienceSlide();
-
-  }else{
-
-    closeExperience();
-
-  }
-
+$("nextExp").addEventListener("click",()=>{
+  const slides=document.querySelectorAll(".expSlide");
+  if(state.expIndex<slides.length-1){state.expIndex++;showExpSlide();}else closeExperience();
 });
-
-
-expPrev.addEventListener("click",()=>{
-
-  if(state.experienceStep > 0){
-
-    state.experienceStep--;
-
-    setExperienceSlide();
-
-  }
-
+$("prevExp").addEventListener("click",()=>{
+  if(state.expIndex>0){state.expIndex--;showExpSlide();}
 });
+$("closeExperience").addEventListener("click",closeExperience);
 
-
-document
-  .getElementById("closeExperience")
-  .addEventListener("click",closeExperience);
-
-
-/* music can be enabled by tapping first button */
 document.addEventListener("pointerdown",()=>{
-  if(state.musicFile && musicPlayer.paused){
-    musicPlayer.play()
-      .then(()=>{
-        audioHint.textContent="♫ Music playing";
-      })
-      .catch(()=>{});
-  }
-},{once:false});
+  if(state.musicFile)$("musicPlayer").play().catch(()=>{});
+});
 
-
-/* =========================
-   INITIAL PREVIEW
-========================= */
-
-function refreshMiniPreview(){
-  readCreator();
-
-  previewName.textContent =
-    state.name;
-
-  previewBirthdayName.textContent =
-    `${state.name} ❤️`;
-
-  previewMeme.textContent =
-    state.meme ||
-    "POV: The cutest person just leveled up 😂";
-}
-
-document
-  .getElementById("name")
-  .addEventListener("input",refreshMiniPreview);
-
-document
-  .getElementById("message")
-  .addEventListener("input",refreshMiniPreview);
-
-document
-  .getElementById("memeText")
-  .addEventListener("input",refreshMiniPreview);
-
-document
-  .getElementById("finalTitle")
-  .addEventListener("input",refreshMiniPreview);
-
-
-/* =========================
-   INITIAL
-========================= */
-
-refreshMiniPreview();
+updateStep();
+updateMini();
 </script>
-
 </body>
 </html>
