@@ -1,1053 +1,1566 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wishly — Create Beautiful Moments</title>
-
-<style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-body{
-  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:
-    radial-gradient(circle at 15% 10%,rgba(236,72,153,.16),transparent 30%),
-    radial-gradient(circle at 85% 20%,rgba(139,92,246,.18),transparent 30%),
-    #08060d;
-  color:#fff;
-  min-height:100vh;
-}
-
-button,input,textarea,select{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-.container{
-  width:min(1120px,92%);
-  margin:auto;
-}
-
-/* NAVBAR */
-
-nav{
-  height:76px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
-
-.logo{
-  font-size:25px;
-  font-weight:900;
-  letter-spacing:-1px;
-}
-
-.logo span{
-  color:#f472b6;
-}
-
-.nav-btn{
-  border:1px solid rgba(255,255,255,.15);
-  background:rgba(255,255,255,.05);
-  color:#fff;
-  padding:10px 18px;
-  border-radius:12px;
-}
-
-/* HERO */
-
-.hero{
-  text-align:center;
-  padding:80px 0 55px;
-}
-
-.badge{
-  display:inline-block;
-  padding:8px 14px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.04);
-  border-radius:999px;
-  color:#f9a8d4;
-  margin-bottom:22px;
-  font-size:14px;
-}
-
-.hero h1{
-  font-size:clamp(42px,7vw,78px);
-  line-height:1;
-  letter-spacing:-4px;
-  background:linear-gradient(90deg,#fff,#f9a8d4,#c4b5fd);
-  -webkit-background-clip:text;
-  color:transparent;
-}
-
-.hero p{
-  max-width:650px;
-  margin:24px auto 0;
-  color:#aaa3b5;
-  font-size:18px;
-  line-height:1.7;
-}
-
-/* CATEGORY */
-
-.section-title{
-  text-align:center;
-  margin:35px 0 28px;
-}
-
-.section-title h2{
-  font-size:32px;
-}
-
-.section-title p{
-  color:#8f8998;
-  margin-top:8px;
-}
-
-.categories{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:16px;
-  padding-bottom:70px;
-}
-
-.category{
-  padding:25px 18px;
-  border:1px solid rgba(255,255,255,.09);
-  border-radius:20px;
-  background:rgba(255,255,255,.035);
-  transition:.25s;
-  text-align:left;
-}
-
-.category:hover{
-  transform:translateY(-5px);
-  border-color:rgba(244,114,182,.4);
-  background:rgba(255,255,255,.06);
-}
-
-.category .emoji{
-  font-size:34px;
-  margin-bottom:14px;
-}
-
-.category h3{
-  font-size:18px;
-  margin-bottom:6px;
-}
-
-.category p{
-  color:#918a9b;
-  font-size:13px;
-  line-height:1.5;
-}
-
-/* CREATOR */
-
-#creator{
-  display:none;
-  padding:50px 0 100px;
-}
-
-.creator-head{
-  text-align:center;
-  margin-bottom:35px;
-}
-
-.creator-head h2{
-  font-size:42px;
-}
-
-.creator-head p{
-  color:#958e9e;
-  margin-top:8px;
-}
-
-/* PROGRESS */
-
-.progress{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:8px;
-  margin-bottom:35px;
-}
-
-.progress-item{
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  background:#18121f;
-  border:1px solid #30253b;
-  color:#81788c;
-  font-weight:700;
-}
-
-.progress-item.active{
-  background:linear-gradient(135deg,#ec4899,#8b5cf6);
-  border-color:transparent;
-  color:#fff;
-}
-
-.progress-line{
-  width:45px;
-  height:2px;
-  background:#2b2234;
-}
-
-/* FORM */
-
-.creator-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:22px;
-}
-
-.panel{
-  background:rgba(18,13,27,.9);
-  border:1px solid rgba(255,255,255,.09);
-  border-radius:24px;
-  padding:28px;
-}
-
-.panel h3{
-  font-size:22px;
-  margin-bottom:22px;
-}
-
-.step{
-  display:none;
-}
-
-.step.active{
-  display:block;
-  animation:slideIn .35s ease;
-}
-
-@keyframes slideIn{
-  from{
-    opacity:0;
-    transform:translateX(20px);
-  }
-  to{
-    opacity:1;
-    transform:translateX(0);
-  }
-}
-
-label{
-  display:block;
-  font-size:13px;
-  color:#aaa1b2;
-  margin-bottom:8px;
-}
-
-input,
-textarea,
-select{
-  width:100%;
-  border:1px solid #34283f;
-  background:#151020;
-  color:#fff;
-  border-radius:13px;
-  padding:14px;
-  outline:none;
-  margin-bottom:18px;
-}
-
-input:focus,
-textarea:focus,
-select:focus{
-  border-color:#c084fc;
-}
-
-textarea{
-  min-height:130px;
-  resize:vertical;
-}
-
-.row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px;
-}
-
-/* MEMORY */
-
-.memory-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px;
-}
-
-.memory{
-  border:1px solid #30243a;
-  background:#110c19;
-  border-radius:16px;
-  padding:14px;
-}
-
-.memory-number{
-  color:#f9a8d4;
-  font-size:13px;
-  margin-bottom:10px;
-}
-
-/* BUTTONS */
-
-.actions{
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  margin-top:25px;
-}
-
-.btn{
-  border:0;
-  border-radius:13px;
-  padding:14px 22px;
-  font-weight:800;
-  transition:.2s;
-}
-
-.btn:hover{
-  transform:translateY(-2px);
-}
-
-.primary{
-  background:linear-gradient(90deg,#ec4899,#8b5cf6);
-  color:#fff;
-}
-
-.secondary{
-  background:#1c1525;
-  border:1px solid #352a40;
-  color:#fff;
-}
-
-/* PREVIEW */
-
-.preview{
-  min-height:560px;
-  border-radius:20px;
-  background:
-    radial-gradient(circle at 50% 25%,rgba(168,85,247,.25),transparent 35%),
-    linear-gradient(160deg,#1d102c,#08060d);
-  border:1px solid rgba(255,255,255,.08);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:35px;
-  position:relative;
-  overflow:hidden;
-}
-
-.preview-content{
-  width:100%;
-  animation:previewFade .4s ease;
-}
-
-@keyframes previewFade{
-  from{
-    opacity:0;
-    transform:scale(.97);
-  }
-  to{
-    opacity:1;
-    transform:scale(1);
-  }
-}
-
-.preview-icon{
-  font-size:65px;
-  margin-bottom:20px;
-}
-
-.preview h2{
-  font-size:36px;
-  margin-bottom:14px;
-}
-
-.preview p{
-  color:#c5bdca;
-  line-height:1.7;
-}
-
-.preview-name{
-  color:#f9a8d4;
-}
-
-/* SUCCESS */
-
-.success{
-  display:none;
-  text-align:center;
-  padding:100px 20px;
-}
-
-.success-icon{
-  font-size:70px;
-  margin-bottom:20px;
-}
-
-.success h2{
-  font-size:45px;
-}
-
-.success p{
-  color:#aaa2b0;
-  margin:15px auto 30px;
-  max-width:600px;
-}
-
-.link-box{
-  max-width:600px;
-  margin:auto;
-  display:flex;
-  gap:8px;
-}
-
-.link-box input{
-  margin:0;
-}
-
-/* FOOTER */
-
-footer{
-  border-top:1px solid rgba(255,255,255,.07);
-  padding:30px 0;
-  text-align:center;
-  color:#706978;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:850px){
-  .categories{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .creator-grid{
-    grid-template-columns:1fr;
-  }
-}
-
-@media(max-width:550px){
-  .hero{
-    padding-top:55px;
-  }
-
-  .hero h1{
-    letter-spacing:-2px;
-  }
-
-  .categories{
-    grid-template-columns:1fr;
-  }
-
-  .row,
-  .memory-grid{
-    grid-template-columns:1fr;
-  }
-
-  .panel{
-    padding:20px;
-  }
-
-  .progress-line{
-    width:15px;
-  }
-
-  .progress-item{
-    width:35px;
-    height:35px;
-    font-size:13px;
-  }
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Wishly — Create beautiful personalized celebrations." />
+  <title>Wishly — Make Moments Unforgettable</title>
+
+  <style>
+    :root{
+      --bg:#07040d;
+      --bg2:#0d0814;
+      --panel:rgba(18,12,28,.78);
+      --panel-solid:#120d1d;
+      --text:#fff;
+      --muted:#a99fb2;
+      --border:rgba(255,255,255,.10);
+      --pink:#ff5ca8;
+      --pink-soft:#ffb1d5;
+      --purple:#9b72ff;
+      --blue:#72b9ff;
+      --gold:#ffd166;
+      --green:#67e8b0;
+      --radius:24px;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+
+    html{scroll-behavior:smooth}
+
+    body{
+      min-height:100vh;
+      overflow-x:hidden;
+      color:var(--text);
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%,rgba(255,92,168,.14),transparent 28%),
+        radial-gradient(circle at 85% 20%,rgba(155,114,255,.13),transparent 30%),
+        radial-gradient(circle at 45% 90%,rgba(114,185,255,.07),transparent 25%),
+        var(--bg);
+    }
+
+    button,input,textarea,select{font:inherit}
+    button{cursor:pointer}
+    img{max-width:100%}
+
+    /* ========= AMBIENT BACKGROUND ========= */
+
+    .ambient{
+      position:fixed;
+      inset:0;
+      overflow:hidden;
+      pointer-events:none;
+      z-index:-5;
+    }
+
+    .glow{
+      position:absolute;
+      border-radius:50%;
+      filter:blur(85px);
+      opacity:.22;
+      animation:glowMove 16s ease-in-out infinite alternate;
+    }
+
+    .glow.one{
+      width:340px;
+      height:340px;
+      background:var(--pink);
+      left:-110px;
+      top:40px;
+    }
+
+    .glow.two{
+      width:400px;
+      height:400px;
+      background:var(--purple);
+      right:-130px;
+      top:28%;
+      animation-duration:20s;
+    }
+
+    .glow.three{
+      width:300px;
+      height:300px;
+      background:var(--blue);
+      left:35%;
+      bottom:-100px;
+      animation-duration:23s;
+    }
+
+    @keyframes glowMove{
+      0%{transform:translate3d(0,0,0) scale(1)}
+      50%{transform:translate3d(40px,-30px,0) scale(1.08)}
+      100%{transform:translate3d(-25px,45px,0) scale(.94)}
+    }
+
+    .floating-layer{
+      position:fixed;
+      inset:0;
+      overflow:hidden;
+      pointer-events:none;
+      z-index:-2;
+    }
+
+    .float{
+      position:absolute;
+      opacity:0;
+      animation:floatUp var(--duration) ease-in-out infinite;
+      animation-delay:var(--delay);
+      filter:drop-shadow(0 0 12px rgba(255,255,255,.12));
+      user-select:none;
+    }
+
+    @keyframes floatUp{
+      0%{
+        transform:translate3d(0,140px,0) rotate(0);
+        opacity:0;
+      }
+      18%{opacity:.32}
+      50%{
+        transform:translate3d(var(--moveX),-80px,0) rotate(8deg);
+        opacity:.56;
+      }
+      82%{opacity:.18}
+      100%{
+        transform:translate3d(calc(var(--moveX) * -1),-330px,0) rotate(-8deg);
+        opacity:0;
+      }
+    }
+
+    /* ========= CONTAINER ========= */
+
+    .container{
+      width:min(1180px,92%);
+      margin:auto;
+    }
+
+    /* ========= NAV ========= */
+
+    nav{
+      height:76px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid var(--border);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:23px;
+      font-weight:900;
+      letter-spacing:-.8px;
+    }
+
+    .brand-mark{
+      width:38px;
+      height:38px;
+      border-radius:13px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,var(--pink),var(--purple));
+      box-shadow:0 10px 35px rgba(255,92,168,.22);
+    }
+
+    .brand span{color:var(--pink)}
+
+    .nav-actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    /* ========= BUTTONS ========= */
+
+    .btn{
+      position:relative;
+      overflow:hidden;
+      border-radius:14px;
+      padding:13px 19px;
+      font-weight:800;
+      border:0;
+      transition:.28s ease;
+    }
+
+    .btn::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(
+        105deg,
+        transparent 35%,
+        rgba(255,255,255,.20) 50%,
+        transparent 65%
+      );
+      transform:translateX(-120%);
+      animation:shine 5s ease-in-out infinite;
+    }
+
+    @keyframes shine{
+      0%,58%{transform:translateX(-120%)}
+      72%,100%{transform:translateX(120%)}
+    }
+
+    .btn:hover{
+      transform:translateY(-2px);
+    }
+
+    .primary{
+      color:#fff;
+      background:linear-gradient(135deg,var(--pink),var(--purple));
+      box-shadow:0 15px 38px rgba(255,92,168,.20);
+    }
+
+    .secondary{
+      color:#fff;
+      background:rgba(255,255,255,.045);
+      border:1px solid var(--border);
+    }
+
+    .danger{
+      background:rgba(255,255,255,.04);
+      color:#fff;
+      border:1px solid var(--border);
+    }
+
+    /* ========= HERO ========= */
+
+    .hero{
+      padding:92px 0 60px;
+      text-align:center;
+      position:relative;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 14px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:rgba(255,255,255,.035);
+      color:#e9ddea;
+      font-size:13px;
+      animation:softFloat 5s ease-in-out infinite;
+    }
+
+    @keyframes softFloat{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-7px)}
+    }
+
+    .hero h1{
+      margin-top:23px;
+      font-size:clamp(46px,8vw,92px);
+      line-height:.95;
+      letter-spacing:-4px;
+      background:linear-gradient(
+        110deg,
+        #fff 10%,
+        #ffb9da 40%,
+        #cfbfff 70%,
+        #fff 90%
+      );
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+      animation:heroFloat 7s ease-in-out infinite;
+    }
+
+    @keyframes heroFloat{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-7px)}
+    }
+
+    .hero p{
+      max-width:690px;
+      margin:22px auto 0;
+      color:var(--muted);
+      font-size:17px;
+      line-height:1.75;
+    }
+
+    .hero-actions{
+      margin-top:28px;
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    /* ========= SECTION ========= */
+
+    .section{
+      margin-top:85px;
+    }
+
+    .section-head{
+      text-align:center;
+      margin-bottom:24px;
+    }
+
+    .section-head h2{
+      font-size:36px;
+      letter-spacing:-1.5px;
+    }
+
+    .section-head p{
+      margin-top:8px;
+      color:var(--muted);
+    }
+
+    /* ========= CATEGORIES ========= */
+
+    .categories{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:15px;
+    }
+
+    .category{
+      min-height:190px;
+      padding:22px;
+      text-align:left;
+      color:#fff;
+      background:rgba(255,255,255,.042);
+      border:1px solid var(--border);
+      border-radius:22px;
+      transition:.35s ease;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .category::before{
+      content:"";
+      position:absolute;
+      width:140px;
+      height:140px;
+      border-radius:50%;
+      right:-55px;
+      top:-55px;
+      background:rgba(255,92,168,.12);
+      filter:blur(30px);
+      animation:categoryGlow 7s ease-in-out infinite alternate;
+    }
+
+    @keyframes categoryGlow{
+      from{transform:translate(0,0) scale(.9)}
+      to{transform:translate(-25px,30px) scale(1.15)}
+    }
+
+    .category:hover{
+      transform:translateY(-7px) scale(1.012);
+      background:rgba(255,255,255,.07);
+      border-color:rgba(255,255,255,.18);
+    }
+
+    .category-emoji{
+      font-size:35px;
+      display:inline-block;
+      animation:emojiFloat 4s ease-in-out infinite;
+    }
+
+    @keyframes emojiFloat{
+      0%,100%{transform:translateY(0) rotate(0)}
+      50%{transform:translateY(-8px) rotate(4deg)}
+    }
+
+    .category h3{
+      margin-top:28px;
+      font-size:20px;
+      position:relative;
+      z-index:1;
+    }
+
+    .category p{
+      margin-top:7px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+      position:relative;
+      z-index:1;
+    }
+
+    /* ========= CREATOR ========= */
+
+    #creator{
+      display:none;
+      padding:25px 0 100px;
+    }
+
+    #creator.active{
+      display:block;
+      animation:creatorEnter .7s cubic-bezier(.2,.8,.2,1);
+    }
+
+    @keyframes creatorEnter{
+      from{
+        opacity:0;
+        transform:translateY(25px);
+        filter:blur(6px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+        filter:blur(0);
+      }
+    }
+
+    .creator-head{
+      text-align:center;
+      margin-bottom:28px;
+    }
+
+    .creator-head h2{
+      margin-top:14px;
+      font-size:40px;
+      letter-spacing:-1.5px;
+    }
+
+    .creator-head p{
+      margin-top:8px;
+      color:var(--muted);
+    }
+
+    .progress{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin-bottom:25px;
+    }
+
+    .dot{
+      width:39px;
+      height:39px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      background:#171120;
+      border:1px solid #32253c;
+      color:#7e7488;
+      font-weight:800;
+      transition:.35s ease;
+    }
+
+    .dot.active{
+      color:#fff;
+      background:linear-gradient(135deg,var(--pink),var(--purple));
+      border-color:transparent;
+      box-shadow:0 0 25px rgba(255,92,168,.25);
+      transform:scale(1.08);
+    }
+
+    .progress-line{
+      width:40px;
+      height:2px;
+      background:#2e2337;
+    }
+
+    .creator-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
+    }
+
+    .panel{
+      position:relative;
+      overflow:hidden;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      background:var(--panel);
+      backdrop-filter:blur(18px);
+      box-shadow:0 25px 90px rgba(0,0,0,.22);
+    }
+
+    .panel::after{
+      content:"";
+      position:absolute;
+      width:200px;
+      height:200px;
+      right:-100px;
+      bottom:-100px;
+      border-radius:50%;
+      background:rgba(155,114,255,.08);
+      filter:blur(40px);
+      animation:panelGlow 10s ease-in-out infinite alternate;
+      pointer-events:none;
+    }
+
+    @keyframes panelGlow{
+      from{transform:translate(0,0)}
+      to{transform:translate(-55px,-35px)}
+    }
+
+    .panel-inner{
+      padding:26px;
+      position:relative;
+      z-index:1;
+    }
+
+    .panel-title{
+      font-size:22px;
+      margin-bottom:20px;
+    }
+
+    .steps{
+      overflow:hidden;
+    }
+
+    .steps-track{
+      display:flex;
+      width:500%;
+      transition:transform .65s cubic-bezier(.7,0,.2,1);
+    }
+
+    .step{
+      width:20%;
+      flex-shrink:0;
+      padding:28px;
+      min-height:550px;
+    }
+
+    .step h3{
+      font-size:27px;
+      letter-spacing:-.7px;
+    }
+
+    .step-sub{
+      color:var(--muted);
+      margin-top:7px;
+      margin-bottom:22px;
+      line-height:1.55;
+      font-size:14px;
+    }
+
+    label{
+      display:block;
+      font-size:13px;
+      color:#ddd5e5;
+      margin-bottom:7px;
+      font-weight:700;
+    }
+
+    input,
+    textarea,
+    select{
+      width:100%;
+      border:1px solid #35283f;
+      border-radius:13px;
+      background:#15101f;
+      color:#fff;
+      padding:13px 14px;
+      outline:none;
+      margin-bottom:17px;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus{
+      border-color:rgba(255,92,168,.65);
+      box-shadow:0 0 0 3px rgba(255,92,168,.07);
+    }
+
+    select option{
+      background:#16101f;
+      color:#fff;
+    }
+
+    textarea{
+      min-height:135px;
+      resize:vertical;
+      line-height:1.55;
+    }
+
+    .two{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .memory-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .memory-box{
+      padding:14px;
+      border:1px dashed rgba(255,255,255,.18);
+      border-radius:17px;
+      background:rgba(255,255,255,.025);
+    }
+
+    .memory-title{
+      color:var(--pink-soft);
+      font-size:12px;
+      letter-spacing:1.3px;
+      font-weight:800;
+      margin-bottom:10px;
+    }
+
+    .memory-box input{
+      margin-bottom:10px;
+      padding:10px;
+      font-size:12px;
+    }
+
+    .memory-preview{
+      display:none;
+      width:100%;
+      height:110px;
+      object-fit:cover;
+      border-radius:12px;
+      margin-bottom:10px;
+      box-shadow:0 10px 30px rgba(0,0,0,.24);
+    }
+
+    .final-preview{
+      display:none;
+      width:100%;
+      max-height:190px;
+      object-fit:cover;
+      border-radius:16px;
+      margin-top:5px;
+    }
+
+    .step-nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:17px 22px;
+      border-top:1px solid var(--border);
+      background:rgba(0,0,0,.12);
+      position:relative;
+      z-index:2;
+    }
+
+    .step-nav-right{
+      display:flex;
+      gap:10px;
+    }
+
+    /* ========= EXPERIENCE PREVIEW ========= */
+
+    .preview{
+      min-height:550px;
+      position:relative;
+      overflow:hidden;
+      border-radius:22px;
+      background:
+        radial-gradient(circle at 50% 15%,rgba(255,92,168,.16),transparent 30%),
+        radial-gradient(circle at 20% 90%,rgba(155,114,255,.15),transparent 30%),
+        linear-gradient(160deg,#24132f,#08060d);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:35px;
+      isolation:isolate;
+    }
+
+    .preview::before,
+    .preview::after{
+      content:"";
+      position:absolute;
+      width:260px;
+      height:260px;
+      border-radius:50%;
+      filter:blur(60px);
+      opacity:.16;
+      z-index:-1;
+    }
+
+    .preview::before{
+      background:var(--pink);
+      left:-100px;
+      top:-80px;
+      animation:previewOrb1 10s ease-in-out infinite alternate;
+    }
+
+    .preview::after{
+      background:var(--purple);
+      right:-110px;
+      bottom:-100px;
+      animation:previewOrb2 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes previewOrb1{
+      from{transform:translate(0,0)}
+      to{transform:translate(130px,80px)}
+    }
+
+    @keyframes previewOrb2{
+      from{transform:translate(0,0)}
+      to{transform:translate(-100px,-90px)}
+    }
+
+    .preview-content{
+      position:relative;
+      z-index:2;
+      width:100%;
+      animation:previewFloat 5s ease-in-out infinite;
+    }
+
+    @keyframes previewFloat{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-8px)}
+    }
+
+    .preview-icon{
+      font-size:78px;
+      display:inline-block;
+      filter:drop-shadow(0 0 20px rgba(255,92,168,.35));
+      animation:
+        iconFloat 4s ease-in-out infinite,
+        iconGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes iconFloat{
+      0%,100%{transform:translateY(0) rotate(0)}
+      50%{transform:translateY(-12px) rotate(3deg)}
+    }
+
+    @keyframes iconGlow{
+      from{filter:drop-shadow(0 0 12px rgba(255,92,168,.2))}
+      to{filter:drop-shadow(0 0 35px rgba(255,92,168,.55))}
+    }
+
+    .preview h2{
+      margin-top:17px;
+      font-size:clamp(30px,4vw,48px);
+      letter-spacing:-1px;
+    }
+
+    .preview-name{
+      color:var(--pink-soft);
+      text-shadow:0 0 16px rgba(255,92,168,.22);
+    }
+
+    .preview p{
+      max-width:560px;
+      margin:15px auto 0;
+      color:#c5bccb;
+      line-height:1.7;
+      white-space:pre-wrap;
+    }
+
+    .preview-memories{
+      margin-top:22px;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:8px;
+    }
+
+    .preview-memories img{
+      width:100%;
+      height:90px;
+      object-fit:cover;
+      border-radius:12px;
+    }
+
+    /* ========= SUCCESS ========= */
+
+    .success{
+      display:none;
+      text-align:center;
+      padding:110px 15px;
+    }
+
+    .success-icon{
+      font-size:76px;
+      animation:successFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes successFloat{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-10px)}
+    }
+
+    .success h2{
+      margin-top:14px;
+      font-size:clamp(35px,6vw,58px);
+      background:linear-gradient(90deg,#fff,#ffb9da,#cbbaff);
+      -webkit-background-clip:text;
+      color:transparent;
+    }
+
+    .success p{
+      max-width:650px;
+      margin:15px auto 26px;
+      color:var(--muted);
+      line-height:1.7;
+    }
+
+    .demo-link{
+      width:min(620px,100%);
+      margin:auto;
+      display:flex;
+      gap:8px;
+    }
+
+    .demo-link input{
+      margin:0;
+    }
+
+    footer{
+      margin-top:90px;
+      border-top:1px solid var(--border);
+      padding:28px 0;
+      text-align:center;
+      color:#736b7c;
+      font-size:13px;
+    }
+
+    /* ========= RESPONSIVE ========= */
+
+    @media(max-width:900px){
+      .categories{grid-template-columns:repeat(2,1fr)}
+      .creator-grid{grid-template-columns:1fr}
+    }
+
+    @media(max-width:600px){
+      .nav-actions{display:none}
+      .hero{padding-top:65px}
+      .hero h1{letter-spacing:-2.5px}
+      .categories{grid-template-columns:1fr}
+      .two,.memory-grid{grid-template-columns:1fr}
+      .step{padding:20px;min-height:560px}
+      .panel-inner{padding:20px}
+      .step-nav{padding:15px}
+      .preview-memories{grid-template-columns:repeat(2,1fr)}
+      .progress-line{width:16px}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      *,
+      *::before,
+      *::after{
+        animation:none!important;
+        transition:none!important;
+        scroll-behavior:auto!important;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
-
-<nav>
-  <div class="logo">Wish<span>ly</span> ✨</div>
-  <button class="nav-btn" onclick="showCreator()">Create a Moment</button>
-</nav>
-
-<!-- HOME -->
-
-<section id="home">
-
-  <div class="hero">
-    <div class="badge">✨ Make moments unforgettable</div>
-
-    <h1>Create something they'll remember.</h1>
-
-    <p>
-      Create beautiful personalized birthday, anniversary,
-      proposal and celebration experiences — then share one magical link.
-    </p>
+  <!-- AMBIENT BACKGROUND -->
+  <div class="ambient" aria-hidden="true">
+    <div class="glow one"></div>
+    <div class="glow two"></div>
+    <div class="glow three"></div>
   </div>
 
-  <div class="section-title">
-    <h2>What are you creating?</h2>
-    <p>Choose a celebration and start building your surprise.</p>
-  </div>
-
-  <div class="categories">
-
-    <div class="category" onclick="selectCategory('Birthday')">
-      <div class="emoji">🎂</div>
-      <h3>Birthday</h3>
-      <p>Make their special day unforgettable.</p>
-    </div>
-
-    <div class="category" onclick="selectCategory('Anniversary')">
-      <div class="emoji">💍</div>
-      <h3>Anniversary</h3>
-      <p>Celebrate your beautiful journey together.</p>
-    </div>
-
-    <div class="category" onclick="selectCategory('Proposal')">
-      <div class="emoji">💖</div>
-      <h3>Proposal</h3>
-      <p>Turn your question into a magical moment.</p>
-    </div>
-
-    <div class="category" onclick="selectCategory('Friendship')">
-      <div class="emoji">👫</div>
-      <h3>Friendship</h3>
-      <p>Celebrate the friend who means everything.</p>
-    </div>
-
-    <div class="category" onclick="selectCategory('Graduation')">
-      <div class="emoji">🎓</div>
-      <h3>Graduation</h3>
-      <p>Celebrate a huge achievement.</p>
-    </div>
-
-    <div class="category" onclick="selectCategory('Congratulations')">
-      <div class="emoji">🎉</div>
-      <h3>Congratulations</h3>
-      <p>Celebrate their biggest wins.</p>
-    </div>
-
-    <div class="category" onclick="selectCategory('Thank You')">
-      <div class="emoji">💐</div>
-      <h3>Thank You</h3>
-      <p>Say thank you in a meaningful way.</p>
-    </div>
-
-    <div class="category" onclick="selectCategory('Custom')">
-      <div class="emoji">🎁</div>
-      <h3>Custom</h3>
-      <p>Create your own special moment.</p>
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- CREATOR -->
-
-<section id="creator">
-
-  <div class="creator-head">
-    <div class="badge" id="selectedBadge">🎂 Birthday</div>
-    <h2>Create your surprise</h2>
-    <p>Build it step by step. Preview everything before sharing.</p>
-  </div>
-
-  <div class="progress">
-    <div class="progress-item active" id="p1">1</div>
-    <div class="progress-line"></div>
-    <div class="progress-item" id="p2">2</div>
-    <div class="progress-line"></div>
-    <div class="progress-item" id="p3">3</div>
-    <div class="progress-line"></div>
-    <div class="progress-item" id="p4">4</div>
-    <div class="progress-line"></div>
-    <div class="progress-item" id="p5">5</div>
+  <div class="floating-layer" aria-hidden="true">
+    <span class="float" style="left:6%;top:85%;font-size:18px;--duration:12s;--delay:0s;--moveX:35px;">♡</span>
+    <span class="float" style="left:14%;top:72%;font-size:13px;--duration:16s;--delay:2s;--moveX:-40px;">✦</span>
+    <span class="float" style="left:25%;top:92%;font-size:21px;--duration:14s;--delay:4s;--moveX:48px;">🌸</span>
+    <span class="float" style="left:37%;top:80%;font-size:16px;--duration:18s;--delay:1s;--moveX:-32px;">♡</span>
+    <span class="float" style="left:51%;top:90%;font-size:13px;--duration:13s;--delay:3s;--moveX:46px;">✦</span>
+    <span class="float" style="left:64%;top:76%;font-size:19px;--duration:15s;--delay:5s;--moveX:-52px;">💕</span>
+    <span class="float" style="left:78%;top:88%;font-size:15px;--duration:17s;--delay:2s;--moveX:36px;">✧</span>
+    <span class="float" style="left:91%;top:65%;font-size:18px;--duration:19s;--delay:6s;--moveX:-44px;">🌷</span>
   </div>
 
 
-  <div class="creator-grid">
+  <div class="container">
 
-    <!-- LEFT -->
+    <!-- NAV -->
+    <nav>
+      <a href="#" class="brand" id="brandHome">
+        <div class="brand-mark">W</div>
+        Wish<span>ly</span>
+      </a>
 
-    <div class="panel">
-
-      <!-- STEP 1 -->
-
-      <div class="step active" id="step1">
-
-        <h3>✨ Basic details</h3>
-
-        <label>Language</label>
-        <select id="language">
-          <option>English</option>
-          <option>Hindi</option>
-          <option>Hinglish</option>
-          <option>Bengali</option>
-          <option>Punjabi</option>
-        </select>
-
-        <div class="row">
-
-          <div>
-            <label>Recipient name</label>
-            <input
-              id="recipient"
-              type="text"
-              placeholder="e.g. Muskan"
-              oninput="updatePreview()"
-            >
-          </div>
-
-          <div>
-            <label>Special date</label>
-            <input id="date" type="date">
-          </div>
-
-        </div>
-
-        <label>Choose a feeling</label>
-
-        <select id="feeling">
-          <option>Sweet & Romantic</option>
-          <option>Emotional</option>
-          <option>Fun & Playful</option>
-          <option>Elegant</option>
-          <option>Surprise</option>
-        </select>
-
-        <div class="actions">
-          <button class="btn secondary" onclick="goHome()">← Back</button>
-          <button class="btn primary" onclick="nextStep()">Next →</button>
-        </div>
-
+      <div class="nav-actions">
+        <button class="btn secondary" id="homeBtn">Home</button>
+        <button class="btn primary" id="startBtn">Create ✨</button>
       </div>
+    </nav>
 
 
-      <!-- STEP 2 -->
+    <!-- HOME -->
+    <section id="home">
 
-      <div class="step" id="step2">
+      <div class="hero">
 
-        <h3>💌 Your message</h3>
+        <div class="badge">✨ Personalized moments made magical</div>
 
-        <label>Main greeting</label>
+        <h1>
+          Make their moment<br>
+          unforgettable.
+        </h1>
 
-        <textarea
-          id="greeting"
-          placeholder="Write something special..."
-          oninput="updatePreview()"
-        >Happy Birthday, my special person ❤️
-
-I hope your day is as beautiful as your smile.
-Keep smiling, keep shining and always remember
-how truly special you are to me.</textarea>
-
-        <label>Line before memories</label>
-
-        <input
-          id="memoryIntro"
-          value="There is something special I want you to see... 💌"
-          oninput="updatePreview()"
-        >
-
-        <label>Final message</label>
-
-        <textarea
-          id="finalMessage"
-          placeholder="Write your final message..."
-        >Once again, Happy Birthday! ❤️
-May your life always be filled with happiness,
-beautiful memories and countless reasons to smile.</textarea>
-
-        <div class="actions">
-          <button class="btn secondary" onclick="prevStep()">← Back</button>
-          <button class="btn primary" onclick="nextStep()">Next →</button>
-        </div>
-
-      </div>
-
-
-      <!-- STEP 3 -->
-
-      <div class="step" id="step3">
-
-        <h3>📸 Your memories</h3>
-
-        <p style="color:#918999;font-size:14px;margin-bottom:20px;">
-          Add up to 4 photos with a small caption for each.
+        <p>
+          Create beautiful interactive birthday, anniversary, proposal
+          and celebration experiences — then share them through one
+          magical link.
         </p>
 
-        <div class="memory-grid">
+        <div class="hero-actions">
+          <button class="btn primary" id="heroCreate">
+            Create a Surprise ✨
+          </button>
 
-          <div class="memory">
-            <div class="memory-number">MEMORY 01</div>
-            <input type="file" accept="image/*">
-            <input type="text" placeholder="Caption 1">
-          </div>
-
-          <div class="memory">
-            <div class="memory-number">MEMORY 02</div>
-            <input type="file" accept="image/*">
-            <input type="text" placeholder="Caption 2">
-          </div>
-
-          <div class="memory">
-            <div class="memory-number">MEMORY 03</div>
-            <input type="file" accept="image/*">
-            <input type="text" placeholder="Caption 3">
-          </div>
-
-          <div class="memory">
-            <div class="memory-number">MEMORY 04</div>
-            <input type="file" accept="image/*">
-            <input type="text" placeholder="Caption 4">
-          </div>
-
-        </div>
-
-        <div class="actions">
-          <button class="btn secondary" onclick="prevStep()">← Back</button>
-          <button class="btn primary" onclick="nextStep()">Next →</button>
-        </div>
-
-      </div>
-
-
-      <!-- STEP 4 -->
-
-      <div class="step" id="step4">
-
-        <h3>🖼️ Final reveal</h3>
-
-        <label>Final image</label>
-        <input type="file" accept="image/*">
-
-        <label>Final greeting</label>
-
-        <textarea
-          id="ending"
-        >This moment was made just for you. ❤️</textarea>
-
-        <label>Experience style</label>
-
-        <select>
-          <option>Cinematic</option>
-          <option>Romantic</option>
-          <option>Elegant</option>
-          <option>Fun</option>
-          <option>Emotional</option>
-        </select>
-
-        <div class="actions">
-          <button class="btn secondary" onclick="prevStep()">← Back</button>
-          <button class="btn primary" onclick="nextStep()">Preview →</button>
-        </div>
-
-      </div>
-
-
-      <!-- STEP 5 -->
-
-      <div class="step" id="step5">
-
-        <h3>✨ Ready to create</h3>
-
-        <p style="color:#aaa1b1;line-height:1.7;margin-bottom:20px;">
-          Everything is ready. In the final version, this button will
-          take the creator to the payment/coupon step and then generate
-          a unique shareable Wishly link.
-        </p>
-
-        <div style="
-          padding:18px;
-          border-radius:16px;
-          background:#151020;
-          border:1px solid #34283f;
-          margin-bottom:20px;
-        ">
-          <strong id="summaryName">Your surprise</strong>
-          <div style="color:#8f8797;margin-top:6px;">
-            <span id="summaryType">Birthday</span> •
-            Personalized experience
-          </div>
-        </div>
-
-        <div class="actions">
-          <button class="btn secondary" onclick="prevStep()">← Back</button>
-          <button class="btn primary" onclick="createSurprise()">
-            ✨ Create Surprise
+          <button class="btn secondary" id="heroExplore">
+            Explore Celebrations
           </button>
         </div>
 
       </div>
 
-    </div>
+
+      <div class="section" id="celebrations">
+
+        <div class="section-head">
+          <h2>What are you celebrating?</h2>
+          <p>Choose a moment and turn it into a story.</p>
+        </div>
+
+        <div class="categories">
+
+          <button class="category" data-category="Birthday">
+            <span class="category-emoji">🎂</span>
+            <h3>Birthday</h3>
+            <p>A beautiful surprise made just for them.</p>
+          </button>
+
+          <button class="category" data-category="Anniversary">
+            <span class="category-emoji">💍</span>
+            <h3>Anniversary</h3>
+            <p>Turn your journey together into a story.</p>
+          </button>
+
+          <button class="category" data-category="Proposal">
+            <span class="category-emoji">💖</span>
+            <h3>Proposal</h3>
+            <p>Make the most important question unforgettable.</p>
+          </button>
+
+          <button class="category" data-category="Friendship">
+            <span class="category-emoji">👫</span>
+            <h3>Friendship</h3>
+            <p>Celebrate the person who's always there.</p>
+          </button>
+
+          <button class="category" data-category="Graduation">
+            <span class="category-emoji">🎓</span>
+            <h3>Graduation</h3>
+            <p>A milestone deserves a beautiful memory.</p>
+          </button>
+
+          <button class="category" data-category="Congratulations">
+            <span class="category-emoji">🎉</span>
+            <h3>Congratulations</h3>
+            <p>Celebrate a moment worth remembering.</p>
+          </button>
+
+          <button class="category" data-category="Thank You">
+            <span class="category-emoji">💐</span>
+            <h3>Thank You</h3>
+            <p>Say thank you in a way they'll remember.</p>
+          </button>
+
+          <button class="category" data-category="Custom">
+            <span class="category-emoji">🎁</span>
+            <h3>Custom</h3>
+            <p>Create a completely personal experience.</p>
+          </button>
+
+        </div>
+      </div>
+    </section>
 
 
-    <!-- RIGHT PREVIEW -->
+    <!-- CREATOR -->
+    <section id="creator">
 
-    <div class="panel">
+      <div class="creator-head">
+        <div class="badge" id="creatorBadge">🎂 Birthday</div>
+        <h2>Create your surprise</h2>
+        <p>One beautiful step at a time.</p>
+      </div>
 
-      <h3>👀 Live Preview</h3>
 
-      <div class="preview" id="preview">
+      <!-- PROGRESS -->
+      <div class="progress">
+        <div class="dot active">1</div>
+        <div class="progress-line"></div>
+        <div class="dot">2</div>
+        <div class="progress-line"></div>
+        <div class="dot">3</div>
+        <div class="progress-line"></div>
+        <div class="dot">4</div>
+        <div class="progress-line"></div>
+        <div class="dot">5</div>
+      </div>
 
-        <div class="preview-content">
 
-          <div class="preview-icon">🎁</div>
+      <div class="creator-grid">
 
-          <h2>
-            A surprise for
-            <span class="preview-name" id="previewName">
-              someone special
-            </span>
-          </h2>
+        <!-- FORM -->
+        <div class="panel">
+          <div class="steps">
 
-          <p id="previewText">
-            Your magical experience will appear here.
-          </p>
+            <div class="steps-track" id="stepsTrack">
+
+              <!-- STEP 1 -->
+              <section class="step">
+
+                <h3>✨ Start with the basics</h3>
+                <p class="step-sub">
+                  Tell us who this special moment is for.
+                </p>
+
+                <label for="language">Experience language</label>
+                <select id="language">
+                  <option value="English">English</option>
+                  <option value="Hindi">हिन्दी</option>
+                  <option value="Hinglish">Hinglish</option>
+                  <option value="Bengali">বাংলা</option>
+                  <option value="Punjabi">ਪੰਜਾਬੀ</option>
+                </select>
+
+                <div class="two">
+
+                  <div>
+                    <label for="recipientName">Recipient name</label>
+                    <input
+                      id="recipientName"
+                      type="text"
+                      placeholder="e.g. Muskan"
+                    />
+                  </div>
+
+                  <div>
+                    <label for="specialDate">Special date</label>
+                    <input id="specialDate" type="date" />
+                  </div>
+
+                </div>
+
+                <label for="style">Feeling</label>
+                <select id="style">
+                  <option>Sweet & Romantic</option>
+                  <option>Emotional</option>
+                  <option>Fun & Playful</option>
+                  <option>Elegant</option>
+                  <option>Dreamy</option>
+                </select>
+
+              </section>
+
+
+              <!-- STEP 2 -->
+              <section class="step">
+
+                <h3>💌 Write something special</h3>
+                <p class="step-sub">
+                  This message becomes part of the cinematic experience.
+                </p>
+
+                <label for="mainMessage">Main greeting</label>
+                <textarea id="mainMessage">Happy Birthday, my special person ❤️
+
+I hope your day is as beautiful as your smile.
+Keep smiling, keep shining, and always remember
+how truly special you are to me. 🥹❤️</textarea>
+
+                <label for="memoryIntro">Before the memories</label>
+                <textarea id="memoryIntro">There is something special I want you to see… 💌</textarea>
+
+              </section>
+
+
+              <!-- STEP 3 -->
+              <section class="step">
+
+                <h3>📸 Add your memories</h3>
+                <p class="step-sub">
+                  Up to 4 photos. Each memory can have its own caption.
+                </p>
+
+                <div class="memory-grid">
+
+                  <div class="memory-box">
+                    <div class="memory-title">MEMORY 01</div>
+                    <input type="file" accept="image/*" data-file="0" />
+                    <img class="memory-preview" data-img="0" alt="Memory 1 preview" />
+                    <input type="text" placeholder="Caption for memory 1" data-caption="0" />
+                  </div>
+
+                  <div class="memory-box">
+                    <div class="memory-title">MEMORY 02</div>
+                    <input type="file" accept="image/*" data-file="1" />
+                    <img class="memory-preview" data-img="1" alt="Memory 2 preview" />
+                    <input type="text" placeholder="Caption for memory 2" data-caption="1" />
+                  </div>
+
+                  <div class="memory-box">
+                    <div class="memory-title">MEMORY 03</div>
+                    <input type="file" accept="image/*" data-file="2" />
+                    <img class="memory-preview" data-img="2" alt="Memory 3 preview" />
+                    <input type="text" placeholder="Caption for memory 3" data-caption="2" />
+                  </div>
+
+                  <div class="memory-box">
+                    <div class="memory-title">MEMORY 04</div>
+                    <input type="file" accept="image/*" data-file="3" />
+                    <img class="memory-preview" data-img="3" alt="Memory 4 preview" />
+                    <input type="text" placeholder="Caption for memory 4" data-caption="3" />
+                  </div>
+
+                </div>
+              </section>
+
+
+              <!-- STEP 4 -->
+              <section class="step">
+
+                <h3>🖼️ Finish the story</h3>
+                <p class="step-sub">
+                  Give the experience a beautiful ending.
+                </p>
+
+                <label for="finalImage">Final image</label>
+                <input id="finalImage" type="file" accept="image/*" />
+
+                <img id="finalImagePreview" class="final-preview" alt="Final image preview" />
+
+                <label for="finalMessage">Final message</label>
+                <textarea id="finalMessage">Once again, Happy Birthday! ❤️
+
+May your life always be filled with happiness,
+beautiful memories and countless reasons to smile.</textarea>
+
+              </section>
+
+
+              <!-- STEP 5 -->
+              <section class="step">
+
+                <h3>✨ Final preview</h3>
+                <p class="step-sub">
+                  Here's the beginning of your Wishly experience.
+                </p>
+
+                <div class="preview">
+
+                  <div class="preview-content">
+
+                    <div class="preview-icon" id="previewIcon">🎁</div>
+
+                    <h2>
+                      A surprise for
+                      <span class="preview-name" id="previewName">
+                        someone special
+                      </span>
+                    </h2>
+
+                    <p id="previewMessage">
+                      Your message will appear here.
+                    </p>
+
+                    <div class="preview-memories" id="previewMemories"></div>
+
+                  </div>
+
+                </div>
+
+              </section>
+
+            </div>
+
+          </div>
+
+
+          <div class="step-nav">
+
+            <button class="btn secondary" id="backBtn">
+              ← Back
+            </button>
+
+            <div class="step-nav-right">
+
+              <button class="btn danger" id="cancelBtn">
+                Cancel
+              </button>
+
+              <button class="btn primary" id="nextBtn">
+                Next →
+              </button>
+
+            </div>
+          </div>
 
         </div>
 
+
+        <!-- LIVE PREVIEW -->
+        <div class="panel">
+          <div class="panel-inner">
+
+            <div class="panel-title">
+              👀 Live Preview
+            </div>
+
+            <div class="preview" id="livePreview">
+
+              <div class="preview-content">
+
+                <div class="preview-icon" id="liveIcon">
+                  🎁
+                </div>
+
+                <h2>
+                  A surprise for
+                  <span class="preview-name" id="liveName">
+                    someone special
+                  </span>
+                </h2>
+
+                <p id="liveMessage">
+                  Your magical experience will appear here.
+                </p>
+
+                <div class="preview-memories" id="liveMemories"></div>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- SUCCESS -->
+    <section class="success" id="success">
+
+      <div class="success-icon">✨</div>
+
+      <h2>Your Wishly is ready!</h2>
+
+      <p>
+        This demo is now ready for the next stage:
+        cinematic recipient animations, Supabase,
+        coupon codes, payment and real share links.
+      </p>
+
+      <div class="demo-link">
+        <input
+          id="demoLink"
+          readonly
+          value="https://wishlymoments.vercel.app/w/demo"
+        />
+        <button class="btn primary" id="copyBtn">Copy</button>
       </div>
 
-    </div>
+      <br />
+
+      <button class="btn secondary" id="newBtn">
+        Create another
+      </button>
+
+    </section>
+
+
+    <footer>
+      © 2026 Wishly — Make moments unforgettable ❤️
+    </footer>
 
   </div>
 
-</section>
 
+  <script>
+    const state = {
+      category: "Birthday",
+      step: 0,
+      photos: [null, null, null, null],
+      captions: ["", "", "", ""]
+    };
 
-<!-- SUCCESS -->
+    const categoryEmoji = {
+      Birthday: "🎂",
+      Anniversary: "💍",
+      Proposal: "💖",
+      Friendship: "👫",
+      Graduation: "🎓",
+      Congratulations: "🎉",
+      "Thank You": "💐",
+      Custom: "🎁"
+    };
 
-<section class="success" id="success">
+    const home = document.getElementById("home");
+    const creator = document.getElementById("creator");
+    const creatorBadge = document.getElementById("creatorBadge");
+    const stepsTrack = document.getElementById("stepsTrack");
+    const dots = document.querySelectorAll(".dot");
 
-  <div class="success-icon">✨</div>
+    const nextBtn = document.getElementById("nextBtn");
+    const backBtn = document.getElementById("backBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
 
-  <h2>Your Wishly is ready!</h2>
+    const recipientName = document.getElementById("recipientName");
+    const mainMessage = document.getElementById("mainMessage");
 
-  <p>
-    This is the foundation for the share-link system.
-    Payment, coupon verification, Supabase storage and the
-    real unique link will be connected in the next phase.
-  </p>
+    function openCreator(category = "Birthday") {
+      state.category = category;
+      state.step = 0;
 
-  <div class="link-box">
-    <input
-      value="https://wishlymoments.vercel.app/surprise/demo"
-      readonly
-    >
-    <button
-      class="btn primary"
-      onclick="copyLink()"
-    >
-      Copy
-    </button>
-  </div>
+      creatorBadge.textContent =
+        `${categoryEmoji[category] || "✨"} ${category}`;
 
-  <br>
+      home.style.display = "none";
+      creator.classList.add("active");
 
-  <button
-    class="btn secondary"
-    onclick="location.reload()"
-  >
-    Create another
-  </button>
+      updateStep();
+      updateLivePreview();
 
-</section>
-
-
-<footer>
-  © 2026 Wishly — Made with ❤️
-</footer>
-
-</div>
-
-
-<script>
-
-let currentStep = 1;
-let selectedCategory = "Birthday";
-
-
-function selectCategory(category){
-
-  selectedCategory = category;
-
-  document.getElementById("selectedBadge").textContent =
-    "✨ " + category;
-
-  document.getElementById("summaryType").textContent =
-    category;
-
-  document.getElementById("home").style.display = "none";
-  document.getElementById("creator").style.display = "block";
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-
-  updatePreview();
-}
-
-
-function showCreator(){
-
-  selectCategory("Birthday");
-
-}
-
-
-function goHome(){
-
-  document.getElementById("creator").style.display = "none";
-  document.getElementById("home").style.display = "block";
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-
-}
-
-
-function showStep(step){
-
-  document.querySelectorAll(".step").forEach(el=>{
-    el.classList.remove("active");
-  });
-
-  document.getElementById("step"+step).classList.add("active");
-
-  for(let i=1;i<=5;i++){
-
-    const p = document.getElementById("p"+i);
-
-    if(i <= step){
-      p.classList.add("active");
-    }else{
-      p.classList.remove("active");
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
     }
 
-  }
+    function closeCreator() {
+      creator.classList.remove("active");
+      home.style.display = "block";
 
-  currentStep = step;
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
 
-  updateSummary();
+    function updateStep() {
+      stepsTrack.style.transform =
+        `translateX(-${state.step * 20}%)`;
 
-}
+      dots.forEach((dot, index) => {
+        dot.classList.toggle("active", index <= state.step);
+      });
 
+      backBtn.style.visibility =
+        state.step === 0 ? "hidden" : "visible";
 
-function nextStep(){
+      nextBtn.textContent =
+        state.step === 4
+          ? "✨ Create Surprise"
+          : "Next →";
 
-  if(currentStep < 5){
-    showStep(currentStep + 1);
-  }
+      updateLivePreview();
+    }
 
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
+    function readBasicState() {
+      state.name =
+        recipientName.value.trim() || "someone special";
 
-}
+      state.greeting =
+        mainMessage.value.trim() ||
+        "Your magical experience will appear here.";
 
+      document.querySelectorAll("[data-caption]").forEach(input => {
+        state.captions[Number(input.dataset.caption)] =
+          input.value.trim();
+      });
+    }
 
-function prevStep(){
+    function updateLivePreview() {
+      readBasicState();
 
-  if(currentStep > 1){
-    showStep(currentStep - 1);
-  }
+      const icon =
+        categoryEmoji[state.category] || "🎁";
 
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
+      document.getElementById("previewIcon").textContent = icon;
+      document.getElementById("liveIcon").textContent = icon;
 
-}
+      document.getElementById("previewName").textContent =
+        state.name;
 
+      document.getElementById("liveName").textContent =
+        state.name;
 
-function updatePreview(){
+      document.getElementById("previewMessage").textContent =
+        state.greeting;
 
-  const name =
-    document.getElementById("recipient").value.trim()
-    || "someone special";
+      document.getElementById("liveMessage").textContent =
+        state.greeting;
 
-  const greeting =
-    document.getElementById("greeting").value.trim()
-    || "Your magical experience will appear here.";
+      const targetA =
+        document.getElementById("previewMemories");
 
-  document.getElementById("previewName").textContent = name;
+      const targetB =
+        document.getElementById("liveMemories");
 
-  document.getElementById("previewText").textContent =
-    greeting.substring(0,180);
+      targetA.innerHTML = "";
+      targetB.innerHTML = "";
 
-}
+      state.photos.forEach(photo => {
+        if (!photo) return;
 
+        const url = URL.createObjectURL(photo);
 
-function updateSummary(){
+        const a = document.createElement("img");
+        a.src = url;
+        a.alt = "Memory photo";
 
-  const name =
-    document.getElementById("recipient").value.trim()
-    || "Your surprise";
+        const b = document.createElement("img");
+        b.src = url;
+        b.alt = "Memory photo";
 
-  document.getElementById("summaryName").textContent =
-    "Surprise for " + name;
+        targetA.appendChild(a);
+        targetB.appendChild(b);
+      });
+    }
 
-}
+    function nextStep() {
+      readBasicState();
 
+      if (state.step < 4) {
+        state.step++;
+        updateStep();
 
-function createSurprise(){
+        window.scrollTo({
+          top: creator.offsetTop - 15,
+          behavior: "smooth"
+        });
 
-  document.getElementById("creator").style.display = "none";
-  document.getElementById("success").style.display = "block";
+        return;
+      }
 
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
+      createDemo();
+    }
 
-}
+    function prevStep() {
+      if (state.step > 0) {
+        state.step--;
+        updateStep();
 
+        window.scrollTo({
+          top: creator.offsetTop - 15,
+          behavior: "smooth"
+        });
+      }
+    }
 
-function copyLink(){
+    function createDemo() {
+      creator.style.display = "none";
+      document.getElementById("success").style.display = "block";
 
-  const input =
-    document.querySelector(".link-box input");
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
 
-  input.select();
+    /* CATEGORY CLICK */
+    document.querySelectorAll(".category").forEach(card => {
+      card.addEventListener("click", () => {
+        openCreator(card.dataset.category);
+      });
+    });
 
-  navigator.clipboard.writeText(input.value);
+    /* NAV */
+    document.getElementById("homeBtn").addEventListener("click", closeCreator);
+    document.getElementById("brandHome").addEventListener("click", e => {
+      e.preventDefault();
+      closeCreator();
+    });
 
-  alert("Share link copied! 🔗");
+    document.getElementById("startBtn").addEventListener("click", () => {
+      openCreator("Birthday");
+    });
 
-}
+    document.getElementById("heroCreate").addEventListener("click", () => {
+      openCreator("Birthday");
+    });
 
+    document.getElementById("heroExplore").addEventListener("click", () => {
+      document.getElementById("celebrations").scrollIntoView({
+        behavior: "smooth"
+      });
+    });
 
-updatePreview();
+    /* FORM NAV */
+    nextBtn.addEventListener("click", nextStep);
+    backBtn.addEventListener("click", prevStep);
 
-</script>
+    cancelBtn.addEventListener("click", closeCreator);
 
+    /* LIVE TEXT */
+    [recipientName, mainMessage].forEach(input => {
+      input.addEventListener("input", updateLivePreview);
+    });
+
+    document.querySelectorAll("[data-caption]").forEach(input => {
+      input.addEventListener("input", updateLivePreview);
+    });
+
+    /* MEMORY UPLOAD */
+    document.querySelectorAll("[data-file]").forEach(input => {
+      input.addEventListener("change", e => {
+        const file = e.target.files[0];
+        const index = Number(input.dataset.file);
+
+        if (!file) return;
+
+        state.photos[index] = file;
+
+        const preview =
+          document.querySelector(`[data-img="${index}"]`);
+
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+
+        updateLivePreview();
+      });
+    });
+
+    /* FINAL IMAGE */
+    document
+      .getElementById("finalImage")
+      .addEventListener("change", e => {
+        const file = e.target.files[0];
+        const preview =
+          document.getElementById("finalImagePreview");
+
+        if (!file) {
+          preview.style.display = "none";
+          return;
+        }
+
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+      });
+
+    /* COPY */
+    document.getElementById("copyBtn").addEventListener("click", () => {
+      const input = document.getElementById("demoLink");
+
+      input.select();
+
+      try {
+        document.execCommand("copy");
+        alert("Link copied! 🔗");
+      } catch {
+        alert("Please copy the link manually.");
+      }
+    });
+
+    /* NEW */
+    document.getElementById("newBtn").addEventListener("click", () => {
+      location.reload();
+    });
+
+    /* INITIAL */
+    updateStep();
+  </script>
 </body>
 </html>
