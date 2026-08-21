@@ -1,50 +1,65 @@
 /* =========================================================
    WISHLY — SUPABASE BACKEND BRIDGE
-   Matched with the current Wishly index.html
+   FINAL VERSION
    ========================================================= */
 
 (() => {
+
   const SUPABASE_URL =
     "https://vhkxcnpgnmnophacsilx.supabase.co";
 
   const SUPABASE_KEY =
     "sb_publishable_9JFL6aPX2-iGnfq2ibxoww_q8s1i9bT";
 
-  const IMAGE_BUCKET = "wishly-images";
-  const MUSIC_BUCKET = "wishly-music";
+  const IMAGE_BUCKET =
+    "wishly-images";
 
-  // Always use the real production URL for generated share links.
+  const MUSIC_BUCKET =
+    "wishly-music";
+
+  /*
+    ALWAYS use the production URL.
+    Never use a Vercel preview URL.
+  */
   const PUBLIC_SITE_URL =
     "https://wishlymoments.vercel.app";
 
   let sb = null;
 
+
   /* =========================================================
-     HELPERS
+     WAIT HELPER
      ========================================================= */
 
-  const waitFor = (fn, tries = 100) =>
-    new Promise((resolve, reject) => {
+  function waitFor(fn, tries = 100) {
+
+    return new Promise((resolve, reject) => {
+
       let count = 0;
 
       const check = () => {
+
         try {
+
           const value = fn();
 
           if (value) {
             resolve(value);
             return;
           }
+
         } catch (_) {}
 
         count++;
 
         if (count >= tries) {
+
           reject(
             new Error(
               "Wishly frontend did not finish loading."
             )
           );
+
           return;
         }
 
@@ -53,45 +68,72 @@
 
       check();
     });
+  }
 
 
-  function setStatus(message, good = false) {
+  /* =========================================================
+     STATUS
+     ========================================================= */
+
+  function setStatus(
+    message,
+    good = false
+  ) {
+
     let box =
       document.getElementById(
         "wishlyBackendStatus"
       );
 
     if (!box) {
-      box = document.createElement("div");
+
+      box =
+        document.createElement(
+          "div"
+        );
 
       box.id =
         "wishlyBackendStatus";
 
-      Object.assign(box.style, {
-        position: "fixed",
-        left: "50%",
-        bottom: "22px",
-        transform: "translateX(-50%)",
-        zIndex: "9999",
-        maxWidth: "min(680px,92vw)",
-        padding: "12px 16px",
-        borderRadius: "999px",
-        background: "rgba(255,255,255,.94)",
-        border:
-          "1px solid rgba(74,51,65,.12)",
-        boxShadow:
-          "0 18px 50px rgba(70,40,60,.18)",
-        color: "#6d4d5d",
-        font:
-          "700 13px/1.4 system-ui,-apple-system,Segoe UI,sans-serif",
-        textAlign: "center",
-        backdropFilter: "blur(14px)"
-      });
+      Object.assign(
+        box.style,
+        {
+          position: "fixed",
+          left: "50%",
+          bottom: "22px",
+          transform:
+            "translateX(-50%)",
+          zIndex: "99999",
+          maxWidth:
+            "min(680px,92vw)",
+          padding:
+            "12px 16px",
+          borderRadius:
+            "999px",
+          background:
+            "rgba(255,255,255,.96)",
+          border:
+            "1px solid rgba(74,51,65,.12)",
+          boxShadow:
+            "0 18px 50px rgba(70,40,60,.18)",
+          color:
+            "#6d4d5d",
+          font:
+            "700 13px/1.4 system-ui,-apple-system,Segoe UI,sans-serif",
+          textAlign:
+            "center",
+          backdropFilter:
+            "blur(14px)"
+        }
+      );
 
-      document.body.appendChild(box);
+      document.body.appendChild(
+        box
+      );
     }
 
-    box.textContent = message;
+    box.textContent =
+      message;
 
     box.style.color =
       good
@@ -101,26 +143,39 @@
 
 
   function removeStatus() {
-    const status =
+
+    const box =
       document.getElementById(
         "wishlyBackendStatus"
       );
 
-    if (status) {
-      status.remove();
+    if (box) {
+      box.remove();
     }
   }
 
 
-  function makeFileName(prefix, file) {
-    const clean =
-      (file?.name || "upload")
-        .replace(
-          /[^a-zA-Z0-9._-]/g,
-          "_"
-        );
+  /* =========================================================
+     FILE UPLOAD
+     ========================================================= */
 
-    return `${crypto.randomUUID()}-${prefix}-${clean}`;
+  function makeFileName(
+    prefix,
+    file
+  ) {
+
+    const clean =
+      (
+        file?.name ||
+        "upload"
+      ).replace(
+        /[^a-zA-Z0-9._-]/g,
+        "_"
+      );
+
+    return (
+      `${crypto.randomUUID()}-${prefix}-${clean}`
+    );
   }
 
 
@@ -129,6 +184,7 @@
     file,
     prefix
   ) {
+
     if (!file) {
       return null;
     }
@@ -152,7 +208,8 @@
               file.type ||
               "application/octet-stream",
 
-            upsert: false,
+            upsert:
+              false,
 
             cacheControl:
               "31536000"
@@ -160,6 +217,7 @@
         );
 
     if (error) {
+
       throw new Error(
         `${prefix} upload failed: ${error.message}`
       );
@@ -170,22 +228,27 @@
     } =
       sb.storage
         .from(bucket)
-        .getPublicUrl(path);
+        .getPublicUrl(
+          path
+        );
 
     return data.publicUrl;
   }
 
 
   /* =========================================================
-     SAVE CREATOR WISH
+     SAVE WISH
      ========================================================= */
 
   async function saveWish() {
+
     if (!sb) {
+
       throw new Error(
         "Supabase is not ready."
       );
     }
+
 
     if (
       typeof readForm ===
@@ -194,8 +257,12 @@
       readForm();
     }
 
+
     const imageFiles =
-      state.photos.filter(Boolean);
+      state.photos.filter(
+        Boolean
+      );
+
 
     const totalUploads =
       imageFiles.length +
@@ -203,34 +270,40 @@
       (state.finalImage ? 1 : 0) +
       (state.musicFile ? 1 : 0);
 
+
     let done = 0;
 
-    const progress = () => {
+
+    function progress() {
+
       done++;
 
       setStatus(
         `Saving your Wishly… ${done}/${totalUploads || 1}`
       );
-    };
+    }
 
 
     /* -------------------------
-       MEMORY PHOTOS
+       MEMORY IMAGES
        ------------------------- */
 
     const memories = [];
+
 
     for (
       let i = 0;
       i < state.photos.length;
       i++
     ) {
+
       const file =
         state.photos[i];
 
       if (!file) {
         continue;
       }
+
 
       const url =
         await uploadFile(
@@ -239,10 +312,13 @@
           `memory-${i + 1}`
         );
 
+
       progress();
 
+
       memories.push({
-        url: url,
+        url:
+          url,
 
         caption:
           state.captions[i] ||
@@ -255,9 +331,12 @@
        FINAL IMAGE
        ------------------------- */
 
-    let finalImageUrl = null;
+    let finalImageUrl =
+      null;
+
 
     if (state.finalImage) {
+
       finalImageUrl =
         await uploadFile(
           IMAGE_BUCKET,
@@ -273,9 +352,12 @@
        CUSTOM IMAGE
        ------------------------- */
 
-    let customImageUrl = null;
+    let customImageUrl =
+      null;
+
 
     if (state.customImage) {
+
       customImageUrl =
         await uploadFile(
           IMAGE_BUCKET,
@@ -291,9 +373,12 @@
        MUSIC
        ------------------------- */
 
-    let musicUrl = null;
+    let musicUrl =
+      null;
+
 
     if (state.musicFile) {
+
       musicUrl =
         await uploadFile(
           MUSIC_BUCKET,
@@ -331,21 +416,28 @@
 
 
     /* -------------------------
-       SHARE TOKEN
+       TOKEN
        ------------------------- */
 
     const shareToken =
       crypto
         .randomUUID()
-        .replaceAll("-", "")
-        .slice(0, 18);
+        .replaceAll(
+          "-",
+          ""
+        )
+        .slice(
+          0,
+          18
+        );
 
 
     /* -------------------------
-       DATABASE ROW
+       DATABASE DATA
        ------------------------- */
 
     const row = {
+
       share_token:
         shareToken,
 
@@ -358,14 +450,13 @@
         "Someone special",
 
       /*
-        IMPORTANT:
-        index.html uses id="date",
-        NOT id="birthday".
+        Correct ID from index.html
       */
       special_date:
         document.getElementById(
           "date"
-        )?.value || null,
+        )?.value ||
+        null,
 
       language:
         document.getElementById(
@@ -374,9 +465,6 @@
         "English",
 
       tone:
-        document.getElementById(
-          "tone"
-        )?.value ||
         "Cute & Romantic",
 
       message:
@@ -430,13 +518,18 @@
     } =
       await sb
         .from("wishes")
-        .insert(row);
+        .insert(
+          row
+        );
+
 
     if (error) {
+
       throw new Error(
         `Database save failed: ${error.message}`
       );
     }
+
 
     return {
       share_token:
@@ -449,7 +542,9 @@
      SHARE LINK MODAL
      ========================================================= */
 
-  function showShareLink(token) {
+  function showShareLink(
+    token
+  ) {
 
     const url =
       `${PUBLIC_SITE_URL}/?wish=${encodeURIComponent(token)}`;
@@ -468,11 +563,13 @@
           "div"
         );
 
+
       modal.id =
         "wishlyShareModal";
 
 
       modal.innerHTML = `
+
         <div class="wishlyShareBackdrop"></div>
 
         <div class="wishlyShareCard">
@@ -496,11 +593,15 @@
 
           <div class="wishlyShareActions">
 
-            <button id="wishlyCopyLink">
+            <button
+              id="wishlyCopyLink"
+            >
               Copy Link
             </button>
 
-            <button id="wishlyOpenLink">
+            <button
+              id="wishlyOpenLink"
+            >
               Open Experience
             </button>
 
@@ -529,10 +630,11 @@
 
 
       style.textContent = `
+
         #wishlyShareModal{
           position:fixed;
           inset:0;
-          z-index:10000;
+          z-index:100000;
           display:grid;
           place-items:center;
         }
@@ -549,16 +651,22 @@
           width:min(560px,92vw);
           padding:32px;
           border-radius:30px;
-          background:rgba(255,250,253,.97);
+          background:rgba(255,250,253,.98);
           border:1px solid rgba(74,51,65,.1);
-          box-shadow:0 30px 100px rgba(50,25,45,.28);
+          box-shadow:
+            0 30px 100px
+            rgba(50,25,45,.28);
           text-align:center;
           color:#6d4d5d;
         }
 
         .wishlyShareIcon{
           font-size:58px;
-          animation:wishlyFloat 3s ease-in-out infinite;
+          animation:
+            wishlyFloat
+            3s
+            ease-in-out
+            infinite;
         }
 
         .wishlyShareCard h2{
@@ -603,10 +711,12 @@
             );
         }
 
-        .wishlyShareActions button:first-child{
+        .wishlyShareActions
+        button:first-child{
           color:#765a68;
           background:#fff0f5;
-          border:1px solid #f2d4e1;
+          border:
+            1px solid #f2d4e1;
         }
 
         .wishlyCloseShare{
@@ -618,12 +728,15 @@
         }
 
         @keyframes wishlyFloat{
+
           50%{
             transform:
               translateY(-7px)
               rotate(3deg);
           }
+
         }
+
       `;
 
 
@@ -644,24 +757,34 @@
               "wishlyShareInput"
             );
 
+
           try {
 
             await navigator.clipboard.writeText(
               input.value
             );
 
+
             const button =
               document.getElementById(
                 "wishlyCopyLink"
               );
 
+
             button.textContent =
               "Copied ✓";
 
-            setTimeout(() => {
-              button.textContent =
-                "Copy Link";
-            }, 1400);
+
+            setTimeout(
+              () => {
+
+                button.textContent =
+                  "Copy Link";
+
+              },
+              1400
+            );
+
 
           } catch {
 
@@ -680,6 +803,7 @@
         "wishlyOpenLink"
       ).onclick =
         () => {
+
           window.open(
             url,
             "_blank"
@@ -693,6 +817,7 @@
         "wishlyCloseShare"
       ).onclick =
         () => {
+
           modal.remove();
         };
     }
@@ -700,7 +825,8 @@
 
     document.getElementById(
       "wishlyShareInput"
-    ).value = url;
+    ).value =
+      url;
 
 
     modal.style.display =
@@ -739,11 +865,7 @@
       async event => {
 
         /*
-          index.html itself handles
-          steps 0-3.
-
-          Supabase only takes over
-          when step === 4.
+          Only intercept step 4.
         */
 
         if (
@@ -788,6 +910,7 @@
           next.disabled =
             false;
 
+
           next.textContent =
             "Preview Experience ✨";
 
@@ -807,6 +930,7 @@
 
           next.disabled =
             false;
+
 
           next.textContent =
             "Preview Experience ✨";
@@ -855,6 +979,7 @@
             "object" &&
           value.__wishlyRemoteUrl
         ) {
+
           return value.__wishlyRemoteUrl;
         }
 
@@ -866,7 +991,9 @@
   }
 
 
-  function remoteFile(url) {
+  function remoteFile(
+    url
+  ) {
 
     if (!url) {
       return null;
@@ -895,7 +1022,8 @@
       await sb.rpc(
         "get_wish_by_token",
         {
-          token
+          token:
+            token
         }
       );
 
@@ -969,22 +1097,20 @@
        MEMORIES
        ------------------------- */
 
-    state.photos =
-      [
-        null,
-        null,
-        null,
-        null
-      ];
+    state.photos = [
+      null,
+      null,
+      null,
+      null
+    ];
 
 
-    state.captions =
-      [
-        "",
-        "",
-        "",
-        ""
-      ];
+    state.captions = [
+      "",
+      "",
+      "",
+      ""
+    ];
 
 
     const memories =
@@ -996,7 +1122,10 @@
 
 
     memories
-      .slice(0, 4)
+      .slice(
+        0,
+        4
+      )
       .forEach(
         (memory, index) => {
 
@@ -1004,6 +1133,7 @@
             remoteFile(
               memory.url
             );
+
 
           state.captions[index] =
             memory.caption ||
@@ -1071,6 +1201,7 @@
     state.blown =
       false;
 
+
     state.expIndex =
       0;
 
@@ -1078,14 +1209,15 @@
     patchObjectURLForRemoteFiles();
 
 
-    /* -------------------------
-       HIDE CREATOR
-       ------------------------- */
+    /* =====================================================
+       IMPORTANT — OPEN EXPERIENCE
+       ===================================================== */
 
     const home =
       document.getElementById(
         "home"
       );
+
 
     const creator =
       document.getElementById(
@@ -1093,22 +1225,49 @@
       );
 
 
+    const experience =
+      document.getElementById(
+        "experience"
+      );
+
+
     if (home) {
+
       home.style.display =
         "none";
     }
 
 
     if (creator) {
+
       creator.classList.remove(
         "active"
       );
     }
 
 
-    /* -------------------------
-       WAIT FOR FRONTEND
-       ------------------------- */
+    /*
+      THIS WAS THE MISSING PART.
+
+      The experience section starts hidden.
+      Public Wish must explicitly activate it.
+    */
+
+    if (experience) {
+
+      experience.classList.add(
+        "active"
+      );
+    }
+
+
+    document.body.style.overflow =
+      "hidden";
+
+
+    /* =====================================================
+       WAIT FOR FRONTEND FUNCTIONS
+       ===================================================== */
 
     await waitFor(
       () =>
@@ -1119,20 +1278,23 @@
     );
 
 
-    /* -------------------------
-       START EXPERIENCE
-       ------------------------- */
+    /* =====================================================
+       RENDER FIRST SLIDE
+       ===================================================== */
 
     renderExperience();
 
 
     /*
-      IMPORTANT:
-      Never show the temporary
-      "Enjoy your Wishly ✨"
-      backend status on the
-      public recipient page.
+      Make sure first slide is visible.
     */
+
+    state.expIndex =
+      0;
+
+
+    showExpSlide();
+
 
     removeStatus();
   }
@@ -1144,76 +1306,99 @@
 
   async function boot() {
 
-    await waitFor(
-      () =>
-        window.supabase &&
-        typeof window.supabase
-          .createClient ===
-          "function"
-    );
+    try {
 
+      /*
+        Wait until Supabase SDK exists.
+      */
 
-    sb =
-      window.supabase
-        .createClient(
-          SUPABASE_URL,
-          SUPABASE_KEY
-        );
-
-
-    patchObjectURLForRemoteFiles();
-
-
-    const token =
-      new URLSearchParams(
-        window.location.search
-      ).get(
-        "wish"
+      await waitFor(
+        () =>
+          window.supabase &&
+          typeof window.supabase
+            .createClient ===
+            "function"
       );
 
 
-    /*
-      PUBLIC WISH
-      Example:
-      https://wishlymoments.vercel.app/?wish=ABC123
-    */
-
-    if (token) {
-
-      try {
-
-        await loadPublicWish(
-          token
-        );
-
-      } catch (error) {
-
-        console.error(
-          "Wishly public load error:",
-          error
-        );
+      sb =
+        window.supabase
+          .createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+          );
 
 
-        setStatus(
-          `❌ ${error.message}`
+      patchObjectURLForRemoteFiles();
+
+
+      /*
+        Read ?wish=TOKEN
+      */
+
+      const token =
+        new URLSearchParams(
+          window.location.search
+        ).get(
+          "wish"
         );
 
 
-        alert(
-          error.message
-        );
+      /* -------------------------
+         PUBLIC RECIPIENT
+         ------------------------- */
+
+      if (token) {
+
+        try {
+
+          await loadPublicWish(
+            token
+          );
+
+
+        } catch (error) {
+
+          console.error(
+            "Wishly public load error:",
+            error
+          );
+
+
+          setStatus(
+            `❌ ${error.message}`
+          );
+
+
+          alert(
+            error.message
+          );
+        }
+
+
+        return;
       }
 
 
-      return;
+      /* -------------------------
+         CREATOR
+         ------------------------- */
+
+      installCreatorSave();
+
+
+    } catch (error) {
+
+      console.error(
+        "Wishly boot error:",
+        error
+      );
+
+
+      setStatus(
+        `❌ ${error.message}`
+      );
     }
-
-
-    /*
-      CREATOR PAGE
-    */
-
-    installCreatorSave();
   }
 
 
@@ -1233,8 +1418,10 @@
 
   script.onload =
     () => {
+
       boot().catch(
         error => {
+
           console.error(
             "Wishly boot error:",
             error
@@ -1246,6 +1433,7 @@
 
   script.onerror =
     () => {
+
       setStatus(
         "❌ Could not load Supabase."
       );
