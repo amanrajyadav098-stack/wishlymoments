@@ -211,8 +211,10 @@
   }
 
   function showShareLink(token) {
+    const PUBLIC_SITE_URL = "https://wishlymoments.vercel.app";
+
     const url =
-      `${location.origin}${location.pathname}?wish=${encodeURIComponent(token)}`;
+      `${PUBLIC_SITE_URL}/?wish=${encodeURIComponent(token)}`;
 
     let modal =
       document.getElementById("wishlyShareModal");
@@ -370,8 +372,7 @@
       `;
 
       document.head.appendChild(style);
-
-      document.getElementById(
+             document.getElementById(
         "wishlyCopyLink"
       ).onclick = async () => {
 
@@ -455,11 +456,6 @@
           const result =
             await saveWish();
 
-          /*
-            Remove backend status immediately.
-            The creator page does not need the
-            floating status pill after saving.
-          */
           const status =
             document.getElementById(
               "wishlyBackendStatus"
@@ -659,12 +655,6 @@
 
     renderExperience();
 
-    /*
-      IMPORTANT:
-      Do NOT show the temporary
-      "Enjoy your Wishly ✨" status pill
-      on the public experience page.
-    */
     const status =
       document.getElementById(
         "wishlyBackendStatus"
@@ -674,8 +664,7 @@
       status.remove();
     }
   }
-
-  async function boot() {
+     async function boot() {
 
     await waitFor(
       () =>
@@ -701,11 +690,6 @@
 
       try {
 
-        /*
-          Don't create a visible
-          "Enjoy your Wishly" status.
-          Load the experience directly.
-        */
         await loadPublicWish(token);
 
       } catch (error) {
@@ -725,10 +709,6 @@
     installCreatorSave();
   }
 
-  /*
-    Load Supabase JS without changing
-    the existing Wishly HTML.
-  */
   const script =
     document.createElement("script");
 
