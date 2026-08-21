@@ -1,35 +1,72 @@
-/* Wishly — Supabase backend bridge
-   Works with the existing Wishly frontend.
-   Public/publishable key only — NEVER put a secret/service key here.
-*/
+/* =========================================================
+   WISHLY — SUPABASE BACKEND BRIDGE
+   Matched with the current Wishly index.html
+   ========================================================= */
 
 (() => {
-  const SUPABASE_URL = "https://vhkxcnpgnmnophacsilx.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_9JFL6aPX2-iGnfq2ibxoww_q8s1i9bT";
+  const SUPABASE_URL =
+    "https://vhkxcnpgnmnophacsilx.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_9JFL6aPX2-iGnfq2ibxoww_q8s1i9bT";
 
   const IMAGE_BUCKET = "wishly-images";
   const MUSIC_BUCKET = "wishly-music";
 
+  // Always use the real production URL for generated share links.
+  const PUBLIC_SITE_URL =
+    "https://wishlymoments.vercel.app";
+
   let sb = null;
 
-  const waitFor = (fn, tries = 100) => new Promise((resolve, reject) => {
-    let n = 0;
-    const tick = () => {
-      try {
-        const value = fn();
-        if (value) return resolve(value);
-      } catch (_) {}
-      if (++n >= tries) return reject(new Error("Wishly frontend did not finish loading."));
-      setTimeout(tick, 100);
-    };
-    tick();
-  });
+  /* =========================================================
+     HELPERS
+     ========================================================= */
+
+  const waitFor = (fn, tries = 100) =>
+    new Promise((resolve, reject) => {
+      let count = 0;
+
+      const check = () => {
+        try {
+          const value = fn();
+
+          if (value) {
+            resolve(value);
+            return;
+          }
+        } catch (_) {}
+
+        count++;
+
+        if (count >= tries) {
+          reject(
+            new Error(
+              "Wishly frontend did not finish loading."
+            )
+          );
+          return;
+        }
+
+        setTimeout(check, 100);
+      };
+
+      check();
+    });
+
 
   function setStatus(message, good = false) {
-    let box = document.getElementById("wishlyBackendStatus");
+    let box =
+      document.getElementById(
+        "wishlyBackendStatus"
+      );
+
     if (!box) {
       box = document.createElement("div");
-      box.id = "wishlyBackendStatus";
+
+      box.id =
+        "wishlyBackendStatus";
+
       Object.assign(box.style, {
         position: "fixed",
         left: "50%",
@@ -40,49 +77,125 @@
         padding: "12px 16px",
         borderRadius: "999px",
         background: "rgba(255,255,255,.94)",
-        border: "1px solid rgba(74,51,65,.12)",
-        boxShadow: "0 18px 50px rgba(70,40,60,.18)",
+        border:
+          "1px solid rgba(74,51,65,.12)",
+        boxShadow:
+          "0 18px 50px rgba(70,40,60,.18)",
         color: "#6d4d5d",
-        font: "700 13px/1.4 system-ui,-apple-system,Segoe UI,sans-serif",
+        font:
+          "700 13px/1.4 system-ui,-apple-system,Segoe UI,sans-serif",
         textAlign: "center",
         backdropFilter: "blur(14px)"
       });
+
       document.body.appendChild(box);
     }
+
     box.textContent = message;
-    box.style.color = good ? "#47755a" : "#6d4d5d";
+
+    box.style.color =
+      good
+        ? "#47755a"
+        : "#6d4d5d";
   }
 
+
+  function removeStatus() {
+    const status =
+      document.getElementById(
+        "wishlyBackendStatus"
+      );
+
+    if (status) {
+      status.remove();
+    }
+  }
+
+
   function makeFileName(prefix, file) {
-    const clean = (file?.name || "upload").replace(/[^a-zA-Z0-9._-]/g, "_");
+    const clean =
+      (file?.name || "upload")
+        .replace(
+          /[^a-zA-Z0-9._-]/g,
+          "_"
+        );
+
     return `${crypto.randomUUID()}-${prefix}-${clean}`;
   }
 
-  async function uploadFile(bucket, file, prefix) {
-    if (!file) return null;
 
-    const path = makeFileName(prefix, file);
+  async function uploadFile(
+    bucket,
+    file,
+    prefix
+  ) {
+    if (!file) {
+      return null;
+    }
 
-    const { error } = await sb.storage
-      .from(bucket)
-      .upload(path, file, {
-        contentType: file.type || "application/octet-stream",
-        upsert: false,
-        cacheControl: "31536000"
-      });
+    const path =
+      makeFileName(
+        prefix,
+        file
+      );
 
-    if (error) throw new Error(`${prefix} upload failed: ${error.message}`);
+    const {
+      error
+    } =
+      await sb.storage
+        .from(bucket)
+        .upload(
+          path,
+          file,
+          {
+            contentType:
+              file.type ||
+              "application/octet-stream",
 
-    const { data } = sb.storage.from(bucket).getPublicUrl(path);
+            upsert: false,
+
+            cacheControl:
+              "31536000"
+          }
+        );
+
+    if (error) {
+      throw new Error(
+        `${prefix} upload failed: ${error.message}`
+      );
+    }
+
+    const {
+      data
+    } =
+      sb.storage
+        .from(bucket)
+        .getPublicUrl(path);
+
     return data.publicUrl;
   }
 
+
+  /* =========================================================
+     SAVE CREATOR WISH
+     ========================================================= */
+
   async function saveWish() {
-    if (!sb) throw new Error("Supabase is not ready.");
+    if (!sb) {
+      throw new Error(
+        "Supabase is not ready."
+      );
+    }
 
-    readForm();
+    if (
+      typeof readForm ===
+      "function"
+    ) {
+      readForm();
+    }
 
-    const imageFiles = state.photos.filter(Boolean);
+    const imageFiles =
+      state.photos.filter(Boolean);
 
     const totalUploads =
       imageFiles.length +
@@ -94,110 +207,230 @@
 
     const progress = () => {
       done++;
-      setStatus(`Saving your Wishly… ${done}/${totalUploads || 1}`);
+
+      setStatus(
+        `Saving your Wishly… ${done}/${totalUploads || 1}`
+      );
     };
+
+
+    /* -------------------------
+       MEMORY PHOTOS
+       ------------------------- */
 
     const memories = [];
 
-    for (let i = 0; i < state.photos.length; i++) {
-      const file = state.photos[i];
+    for (
+      let i = 0;
+      i < state.photos.length;
+      i++
+    ) {
+      const file =
+        state.photos[i];
 
-      if (!file) continue;
+      if (!file) {
+        continue;
+      }
 
-      const url = await uploadFile(
-        IMAGE_BUCKET,
-        file,
-        `memory-${i + 1}`
-      );
+      const url =
+        await uploadFile(
+          IMAGE_BUCKET,
+          file,
+          `memory-${i + 1}`
+        );
 
       progress();
 
       memories.push({
-        url,
+        url: url,
+
         caption:
           state.captions[i] ||
           "A little memory worth keeping. ❤️"
       });
     }
 
+
+    /* -------------------------
+       FINAL IMAGE
+       ------------------------- */
+
     let finalImageUrl = null;
 
     if (state.finalImage) {
-      finalImageUrl = await uploadFile(
-        IMAGE_BUCKET,
-        state.finalImage,
-        "final"
-      );
+      finalImageUrl =
+        await uploadFile(
+          IMAGE_BUCKET,
+          state.finalImage,
+          "final"
+        );
 
       progress();
     }
+
+
+    /* -------------------------
+       CUSTOM IMAGE
+       ------------------------- */
 
     let customImageUrl = null;
 
     if (state.customImage) {
-      customImageUrl = await uploadFile(
-        IMAGE_BUCKET,
-        state.customImage,
-        "custom"
-      );
+      customImageUrl =
+        await uploadFile(
+          IMAGE_BUCKET,
+          state.customImage,
+          "custom"
+        );
 
       progress();
     }
+
+
+    /* -------------------------
+       MUSIC
+       ------------------------- */
 
     let musicUrl = null;
 
     if (state.musicFile) {
-      musicUrl = await uploadFile(
-        MUSIC_BUCKET,
-        state.musicFile,
-        "music"
-      );
+      musicUrl =
+        await uploadFile(
+          MUSIC_BUCKET,
+          state.musicFile,
+          "music"
+        );
 
       progress();
     }
 
-    const customSlide = state.customImage
-      ? {
-          image_url: customImageUrl,
-          title: state.customTitle || "",
-          small: state.customSmall || "",
-          animation: state.customAnimation || "Float"
-        }
-      : {};
 
-    const shareToken = crypto
-      .randomUUID()
-      .replaceAll("-", "")
-      .slice(0, 18);
+    /* -------------------------
+       CUSTOM SLIDE
+       ------------------------- */
+
+    const customSlide =
+      state.customImage
+        ? {
+            image_url:
+              customImageUrl,
+
+            title:
+              state.customTitle ||
+              "",
+
+            small:
+              state.customSmall ||
+              "",
+
+            animation:
+              state.customAnimation ||
+              "Float"
+          }
+        : {};
+
+
+    /* -------------------------
+       SHARE TOKEN
+       ------------------------- */
+
+    const shareToken =
+      crypto
+        .randomUUID()
+        .replaceAll("-", "")
+        .slice(0, 18);
+
+
+    /* -------------------------
+       DATABASE ROW
+       ------------------------- */
 
     const row = {
-      share_token: shareToken,
-      category: state.category || "Birthday",
-      recipient_name: state.name || "Someone special",
+      share_token:
+        shareToken,
+
+      category:
+        state.category ||
+        "Birthday",
+
+      recipient_name:
+        state.name ||
+        "Someone special",
+
+      /*
+        IMPORTANT:
+        index.html uses id="date",
+        NOT id="birthday".
+      */
       special_date:
-        document.getElementById("birthday")?.value || null,
+        document.getElementById(
+          "date"
+        )?.value || null,
+
       language:
-        document.getElementById("language")?.value || "English",
-      tone: "Cute & Romantic",
-      message: state.message || "",
-      memory_line: state.memoryLine || "",
-      ending_message: state.endingMessage || "",
-      final_title: state.finalTitle || "",
-      extras: Array.isArray(state.extras)
-        ? state.extras
-        : [],
-      custom_slide: customSlide,
-      memories,
-      final_image_url: finalImageUrl,
-      music_url: musicUrl,
-      payment_status: "paid",
-      amount: 0,
-      status: "published"
+        document.getElementById(
+          "language"
+        )?.value ||
+        "English",
+
+      tone:
+        document.getElementById(
+          "tone"
+        )?.value ||
+        "Cute & Romantic",
+
+      message:
+        state.message ||
+        "",
+
+      memory_line:
+        state.memoryLine ||
+        "",
+
+      ending_message:
+        state.endingMessage ||
+        "",
+
+      final_title:
+        state.finalTitle ||
+        "",
+
+      extras:
+        Array.isArray(
+          state.extras
+        )
+          ? state.extras
+          : [],
+
+      custom_slide:
+        customSlide,
+
+      memories:
+        memories,
+
+      final_image_url:
+        finalImageUrl,
+
+      music_url:
+        musicUrl,
+
+      payment_status:
+        "paid",
+
+      amount:
+        0,
+
+      status:
+        "published"
     };
 
-    const { error } = await sb
-      .from("wishes")
-      .insert(row);
+
+    const {
+      error
+    } =
+      await sb
+        .from("wishes")
+        .insert(row);
 
     if (error) {
       throw new Error(
@@ -206,23 +439,38 @@
     }
 
     return {
-      share_token: shareToken
+      share_token:
+        shareToken
     };
   }
 
+
+  /* =========================================================
+     SHARE LINK MODAL
+     ========================================================= */
+
   function showShareLink(token) {
-    const PUBLIC_SITE_URL = "https://wishlymoments.vercel.app";
 
     const url =
       `${PUBLIC_SITE_URL}/?wish=${encodeURIComponent(token)}`;
 
+
     let modal =
-      document.getElementById("wishlyShareModal");
+      document.getElementById(
+        "wishlyShareModal"
+      );
+
 
     if (!modal) {
-      modal = document.createElement("div");
 
-      modal.id = "wishlyShareModal";
+      modal =
+        document.createElement(
+          "div"
+        );
+
+      modal.id =
+        "wishlyShareModal";
+
 
       modal.innerHTML = `
         <div class="wishlyShareBackdrop"></div>
@@ -268,10 +516,17 @@
         </div>
       `;
 
-      document.body.appendChild(modal);
+
+      document.body.appendChild(
+        modal
+      );
+
 
       const style =
-        document.createElement("style");
+        document.createElement(
+          "style"
+        );
+
 
       style.textContent = `
         #wishlyShareModal{
@@ -371,120 +626,195 @@
         }
       `;
 
-      document.head.appendChild(style);
-             document.getElementById(
+
+      document.head.appendChild(
+        style
+      );
+
+
+      /* COPY */
+
+      document.getElementById(
         "wishlyCopyLink"
-      ).onclick = async () => {
+      ).onclick =
+        async () => {
 
-        const input =
-          document.getElementById(
-            "wishlyShareInput"
-          );
-
-        try {
-
-          await navigator.clipboard.writeText(
-            input.value
-          );
-
-          document.getElementById(
-            "wishlyCopyLink"
-          ).textContent = "Copied ✓";
-
-          setTimeout(() => {
+          const input =
             document.getElementById(
-              "wishlyCopyLink"
-            ).textContent = "Copy Link";
-          }, 1400);
+              "wishlyShareInput"
+            );
 
-        } catch {
+          try {
 
-          input.select();
+            await navigator.clipboard.writeText(
+              input.value
+            );
 
-          document.execCommand("copy");
-        }
-      };
+            const button =
+              document.getElementById(
+                "wishlyCopyLink"
+              );
+
+            button.textContent =
+              "Copied ✓";
+
+            setTimeout(() => {
+              button.textContent =
+                "Copy Link";
+            }, 1400);
+
+          } catch {
+
+            input.select();
+
+            document.execCommand(
+              "copy"
+            );
+          }
+        };
+
+
+      /* OPEN */
 
       document.getElementById(
         "wishlyOpenLink"
-      ).onclick = () => {
-        window.open(url, "_blank");
-      };
+      ).onclick =
+        () => {
+          window.open(
+            url,
+            "_blank"
+          );
+        };
+
+
+      /* CLOSE */
 
       document.getElementById(
         "wishlyCloseShare"
-      ).onclick = () => modal.remove();
+      ).onclick =
+        () => {
+          modal.remove();
+        };
     }
+
 
     document.getElementById(
       "wishlyShareInput"
     ).value = url;
 
-    modal.style.display = "grid";
+
+    modal.style.display =
+      "grid";
   }
+
+
+  /* =========================================================
+     CREATOR SAVE BUTTON
+     ========================================================= */
 
   function installCreatorSave() {
 
     const next =
-      document.getElementById("nextBtn");
+      document.getElementById(
+        "nextBtn"
+      );
+
 
     if (
       !next ||
-      next.dataset.wishlyBackendInstalled
-    ) return;
+      next.dataset
+        .wishyBackendInstalled
+    ) {
+      return;
+    }
 
-    next.dataset.wishlyBackendInstalled = "1";
+
+    next.dataset
+      .wishyBackendInstalled =
+      "1";
+
 
     next.addEventListener(
       "click",
-      async (event) => {
+      async event => {
 
-        if (state.step !== 4) return;
+        /*
+          index.html itself handles
+          steps 0-3.
+
+          Supabase only takes over
+          when step === 4.
+        */
+
+        if (
+          typeof state ===
+            "undefined" ||
+          state.step !== 4
+        ) {
+          return;
+        }
+
 
         event.preventDefault();
         event.stopImmediatePropagation();
 
+
         try {
 
-          next.disabled = true;
-          next.textContent = "Saving ✨";
+          next.disabled =
+            true;
+
+          next.textContent =
+            "Saving ✨";
+
 
           setStatus(
             "Preparing your Wishly…"
           );
 
+
           const result =
             await saveWish();
 
-          const status =
-            document.getElementById(
-              "wishlyBackendStatus"
-            );
 
-          if (status) status.remove();
+          removeStatus();
+
 
           showShareLink(
             result.share_token
           );
 
-          next.disabled = false;
+
+          next.disabled =
+            false;
+
           next.textContent =
             "Preview Experience ✨";
 
+
         } catch (error) {
 
-          console.error(error);
+          console.error(
+            "Wishly save error:",
+            error
+          );
+
 
           setStatus(
             `❌ ${error.message}`
           );
 
-          next.disabled = false;
+
+          next.disabled =
+            false;
 
           next.textContent =
             "Preview Experience ✨";
 
-          alert(error.message);
+
+          alert(
+            error.message
+          );
         }
 
       },
@@ -492,158 +822,293 @@
     );
   }
 
+
+  /* =========================================================
+     REMOTE FILE SUPPORT
+     ========================================================= */
+
   function patchObjectURLForRemoteFiles() {
 
+    if (
+      URL.__wishlyPatched
+    ) {
+      return;
+    }
+
+
     const original =
-      URL.createObjectURL.bind(URL);
+      URL.createObjectURL.bind(
+        URL
+      );
 
-    if (URL.__wishlyPatched) return;
 
-    URL.__wishlyPatched = true;
+    URL.__wishlyPatched =
+      true;
 
-    URL.createObjectURL = value => {
 
-      if (
-        value &&
-        typeof value === "object" &&
-        value.__wishlyRemoteUrl
-      ) {
-        return value.__wishlyRemoteUrl;
-      }
+    URL.createObjectURL =
+      value => {
 
-      return original(value);
-    };
+        if (
+          value &&
+          typeof value ===
+            "object" &&
+          value.__wishlyRemoteUrl
+        ) {
+          return value.__wishlyRemoteUrl;
+        }
+
+
+        return original(
+          value
+        );
+      };
   }
+
 
   function remoteFile(url) {
 
-    return url
-      ? {
-          __wishlyRemoteUrl: url
-        }
-      : null;
+    if (!url) {
+      return null;
+    }
+
+
+    return {
+      __wishlyRemoteUrl:
+        url
+    };
   }
 
-  async function loadPublicWish(token) {
+
+  /* =========================================================
+     LOAD PUBLIC WISH
+     ========================================================= */
+
+  async function loadPublicWish(
+    token
+  ) {
 
     const {
       data,
       error
-    } = await sb.rpc(
-      "get_wish_by_token",
-      {
-        token
-      }
-    );
+    } =
+      await sb.rpc(
+        "get_wish_by_token",
+        {
+          token
+        }
+      );
+
 
     if (error) {
+
       throw new Error(
         `Could not load Wishly: ${error.message}`
       );
     }
 
-    if (!data || !data.length) {
+
+    if (
+      !data ||
+      !data.length
+    ) {
+
       throw new Error(
         "This Wishly link is invalid or unavailable."
       );
     }
 
-    const wish = data[0];
+
+    const wish =
+      data[0];
+
+
+    /* -------------------------
+       BASIC DATA
+       ------------------------- */
 
     state.category =
-      wish.category || "Birthday";
+      wish.category ||
+      "Birthday";
+
 
     state.name =
       wish.recipient_name ||
       "Someone special";
 
+
     state.message =
-      wish.message || "";
+      wish.message ||
+      "";
+
 
     state.memoryLine =
-      wish.memory_line || "";
+      wish.memory_line ||
+      "";
+
 
     state.endingMessage =
-      wish.ending_message || "";
+      wish.ending_message ||
+      "";
+
 
     state.finalTitle =
-      wish.final_title || "";
+      wish.final_title ||
+      "";
+
 
     state.extras =
-      Array.isArray(wish.extras)
+      Array.isArray(
+        wish.extras
+      )
         ? wish.extras
         : [];
 
+
+    /* -------------------------
+       MEMORIES
+       ------------------------- */
+
     state.photos =
-      [null, null, null, null];
+      [
+        null,
+        null,
+        null,
+        null
+      ];
+
 
     state.captions =
-      ["", "", "", ""];
+      [
+        "",
+        "",
+        "",
+        ""
+      ];
+
 
     const memories =
-      Array.isArray(wish.memories)
+      Array.isArray(
+        wish.memories
+      )
         ? wish.memories
         : [];
 
+
     memories
       .slice(0, 4)
-      .forEach((m, i) => {
+      .forEach(
+        (memory, index) => {
 
-        state.photos[i] =
-          remoteFile(m.url);
+          state.photos[index] =
+            remoteFile(
+              memory.url
+            );
 
-        state.captions[i] =
-          m.caption || "";
-      });
+          state.captions[index] =
+            memory.caption ||
+            "";
+        }
+      );
+
+
+    /* -------------------------
+       CUSTOM SLIDE
+       ------------------------- */
 
     const custom =
-      wish.custom_slide || {};
+      wish.custom_slide ||
+      {};
+
 
     state.customImage =
-      remoteFile(custom.image_url);
+      remoteFile(
+        custom.image_url
+      );
+
 
     state.customTitle =
-      custom.title || "";
+      custom.title ||
+      "";
+
 
     state.customSmall =
-      custom.small || "";
+      custom.small ||
+      "";
+
 
     state.customAnimation =
-      custom.animation || "Float";
+      custom.animation ||
+      "Float";
+
+
+    /* -------------------------
+       FINAL IMAGE
+       ------------------------- */
 
     state.finalImage =
       remoteFile(
         wish.final_image_url
       );
 
+
+    /* -------------------------
+       MUSIC
+       ------------------------- */
+
     state.musicFile =
       remoteFile(
         wish.music_url
       );
+
 
     state.musicChoice =
       wish.music_url
         ? "custom"
         : "none";
 
-    state.blown = false;
-    state.expIndex = 0;
+
+    state.blown =
+      false;
+
+    state.expIndex =
+      0;
+
 
     patchObjectURLForRemoteFiles();
 
+
+    /* -------------------------
+       HIDE CREATOR
+       ------------------------- */
+
     const home =
-      document.getElementById("home");
+      document.getElementById(
+        "home"
+      );
 
     const creator =
-      document.getElementById("creator");
+      document.getElementById(
+        "creator"
+      );
+
 
     if (home) {
-      home.style.display = "none";
+      home.style.display =
+        "none";
     }
 
+
     if (creator) {
-      creator.classList.remove("active");
+      creator.classList.remove(
+        "active"
+      );
     }
+
+
+    /* -------------------------
+       WAIT FOR FRONTEND
+       ------------------------- */
 
     await waitFor(
       () =>
@@ -653,76 +1118,142 @@
           "function"
     );
 
+
+    /* -------------------------
+       START EXPERIENCE
+       ------------------------- */
+
     renderExperience();
 
-    const status =
-      document.getElementById(
-        "wishlyBackendStatus"
-      );
 
-    if (status) {
-      status.remove();
-    }
+    /*
+      IMPORTANT:
+      Never show the temporary
+      "Enjoy your Wishly ✨"
+      backend status on the
+      public recipient page.
+    */
+
+    removeStatus();
   }
-     async function boot() {
+
+
+  /* =========================================================
+     BOOT
+     ========================================================= */
+
+  async function boot() {
 
     await waitFor(
       () =>
         window.supabase &&
         typeof window.supabase
-          .createClient === "function"
+          .createClient ===
+          "function"
     );
 
+
     sb =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-      );
+      window.supabase
+        .createClient(
+          SUPABASE_URL,
+          SUPABASE_KEY
+        );
+
 
     patchObjectURLForRemoteFiles();
 
+
     const token =
       new URLSearchParams(
-        location.search
-      ).get("wish");
+        window.location.search
+      ).get(
+        "wish"
+      );
+
+
+    /*
+      PUBLIC WISH
+      Example:
+      https://wishlymoments.vercel.app/?wish=ABC123
+    */
 
     if (token) {
 
       try {
 
-        await loadPublicWish(token);
+        await loadPublicWish(
+          token
+        );
 
       } catch (error) {
 
-        console.error(error);
+        console.error(
+          "Wishly public load error:",
+          error
+        );
+
 
         setStatus(
           `❌ ${error.message}`
         );
 
-        alert(error.message);
+
+        alert(
+          error.message
+        );
       }
+
 
       return;
     }
 
+
+    /*
+      CREATOR PAGE
+    */
+
     installCreatorSave();
   }
 
+
+  /* =========================================================
+     LOAD SUPABASE SDK
+     ========================================================= */
+
   const script =
-    document.createElement("script");
+    document.createElement(
+      "script"
+    );
+
 
   script.src =
     "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 
-  script.onload = () =>
-    boot().catch(console.error);
 
-  script.onerror = () =>
-    setStatus(
-      "❌ Could not load Supabase."
-    );
+  script.onload =
+    () => {
+      boot().catch(
+        error => {
+          console.error(
+            "Wishly boot error:",
+            error
+          );
+        }
+      );
+    };
 
-  document.head.appendChild(script);
+
+  script.onerror =
+    () => {
+      setStatus(
+        "❌ Could not load Supabase."
+      );
+    };
+
+
+  document.head.appendChild(
+    script
+  );
 
 })();
