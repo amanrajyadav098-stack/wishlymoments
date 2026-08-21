@@ -1,3 +1,8 @@
+/* Wishly — Supabase backend bridge
+   Works with the existing Wishly frontend.
+   Public/publishable key only — NEVER put a secret/service key here.
+*/
+
 (() => {
   const SUPABASE_URL = "https://vhkxcnpgnmnophacsilx.supabase.co";
   const SUPABASE_KEY = "sb_publishable_9JFL6aPX2-iGnfq2ibxoww_q8s1i9bT";
@@ -7,28 +12,30 @@
 
   let sb = null;
 
-  const waitFor = (fn, tries = 100) =>
-    new Promise((resolve, reject) => {
-      let n = 0;
+  const waitFor = (fn, tries = 100) => new Promise((resolve, reject) => {
+    let n = 0;
 
-      const tick = () => {
-        try {
-          const value = fn();
-          if (value) return resolve(value);
-        } catch (_) {}
+    const tick = () => {
+      try {
+        const value = fn();
+        if (value) return resolve(value);
+      } catch (_) {}
 
-        if (++n >= tries) {
-          return reject(new Error("Wishly frontend did not finish loading."));
-        }
+      if (++n >= tries) {
+        return reject(
+          new Error("Wishly frontend did not finish loading.")
+        );
+      }
 
-        setTimeout(tick, 100);
-      };
+      setTimeout(tick, 100);
+    };
 
-      tick();
-    });
+    tick();
+  });
 
   function setStatus(message, good = false) {
-    let box = document.getElementById("wishlyBackendStatus");
+    let box =
+      document.getElementById("wishlyBackendStatus");
 
     if (!box) {
       box = document.createElement("div");
@@ -56,12 +63,14 @@
     }
 
     box.textContent = message;
-    box.style.color = good ? "#47755a" : "#6d4d5d";
+    box.style.color =
+      good ? "#47755a" : "#6d4d5d";
   }
 
   function makeFileName(prefix, file) {
-    const clean = (file?.name || "upload")
-      .replace(/[^a-zA-Z0-9._-]/g, "_");
+    const clean =
+      (file?.name || "upload")
+        .replace(/[^a-zA-Z0-9._-]/g, "_");
 
     return `${crypto.randomUUID()}-${prefix}-${clean}`;
   }
@@ -69,39 +78,48 @@
   async function uploadFile(bucket, file, prefix) {
     if (!file) return null;
 
-    const path = makeFileName(prefix, file);
+    const path =
+      makeFileName(prefix, file);
 
-    const { error } = await sb.storage
-      .from(bucket)
-      .upload(path, file, {
-        contentType: file.type || "application/octet-stream",
-        upsert: false,
-        cacheControl: "31536000"
-      });
+    const { error } =
+      await sb.storage
+        .from(bucket)
+        .upload(path, file, {
+          contentType:
+            file.type ||
+            "application/octet-stream",
+
+          upsert: false,
+
+          cacheControl:
+            "31536000"
+        });
 
     if (error) {
-      throw new Error(`${prefix} upload failed: ${error.message}`);
+      throw new Error(
+        `${prefix} upload failed: ${error.message}`
+      );
     }
 
-    const { data } = sb.storage
-      .from(bucket)
-      .getPublicUrl(path);
+    const { data } =
+      sb.storage
+        .from(bucket)
+        .getPublicUrl(path);
 
     return data.publicUrl;
   }
 
   async function saveWish() {
     if (!sb) {
-      throw new Error("Supabase is not ready.");
+      throw new Error(
+        "Supabase is not ready."
+      );
     }
 
-    if (typeof readForm === "function") {
-      readForm();
-    }
+    readForm();
 
-    const imageFiles = Array.isArray(state.photos)
-      ? state.photos.filter(Boolean)
-      : [];
+    const imageFiles =
+      state.photos.filter(Boolean);
 
     const totalUploads =
       imageFiles.length +
@@ -113,23 +131,30 @@
 
     const progress = () => {
       done++;
+
       setStatus(
-        `Saving your Wishly… ${done}/${Math.max(totalUploads, 1)}`
+        `Saving your Wishly… ${done}/${totalUploads || 1}`
       );
     };
 
     const memories = [];
 
-    for (let i = 0; i < state.photos.length; i++) {
-      const file = state.photos[i];
+    for (
+      let i = 0;
+      i < state.photos.length;
+      i++
+    ) {
+      const file =
+        state.photos[i];
 
       if (!file) continue;
 
-      const url = await uploadFile(
-        IMAGE_BUCKET,
-        file,
-        `memory-${i + 1}`
-      );
+      const url =
+        await uploadFile(
+          IMAGE_BUCKET,
+          file,
+          `memory-${i + 1}`
+        );
 
       progress();
 
@@ -144,11 +169,12 @@
     let finalImageUrl = null;
 
     if (state.finalImage) {
-      finalImageUrl = await uploadFile(
-        IMAGE_BUCKET,
-        state.finalImage,
-        "final"
-      );
+      finalImageUrl =
+        await uploadFile(
+          IMAGE_BUCKET,
+          state.finalImage,
+          "final"
+        );
 
       progress();
     }
@@ -156,11 +182,12 @@
     let customImageUrl = null;
 
     if (state.customImage) {
-      customImageUrl = await uploadFile(
-        IMAGE_BUCKET,
-        state.customImage,
-        "custom"
-      );
+      customImageUrl =
+        await uploadFile(
+          IMAGE_BUCKET,
+          state.customImage,
+          "custom"
+        );
 
       progress();
     }
@@ -168,34 +195,43 @@
     let musicUrl = null;
 
     if (state.musicFile) {
-      musicUrl = await uploadFile(
-        MUSIC_BUCKET,
-        state.musicFile,
-        "music"
-      );
+      musicUrl =
+        await uploadFile(
+          MUSIC_BUCKET,
+          state.musicFile,
+          "music"
+        );
 
       progress();
     }
 
-    const shareToken = crypto
-      .randomUUID()
-      .replaceAll("-", "")
-      .slice(0, 18);
+    const customSlide =
+      state.customImage
+        ? {
+            image_url:
+              customImageUrl,
 
-    const customSlide = state.customImage
-      ? {
-          image_url: customImageUrl,
-          title: state.customTitle || "",
-          small: state.customSmall || "",
-          animation: state.customAnimation || "Float"
-        }
-      : {};
+            title:
+              state.customTitle || "",
 
-    const birthdayInput =
-      document.getElementById("birthday");
+            small:
+              state.customSmall || "",
+
+            animation:
+              state.customAnimation ||
+              "Float"
+          }
+        : {};
+
+    const shareToken =
+      crypto
+        .randomUUID()
+        .replaceAll("-", "")
+        .slice(0, 18);
 
     const row = {
-      share_token: shareToken,
+      share_token:
+        shareToken,
 
       category:
         state.category ||
@@ -206,14 +242,19 @@
         "Someone special",
 
       special_date:
-        birthdayInput?.value ||
+        document
+          .getElementById("birthday")
+          ?.value ||
         null,
 
       language:
-        document.getElementById("language")?.value ||
+        document
+          .getElementById("language")
+          ?.value ||
         "English",
 
-      tone: "Cute & Romantic",
+      tone:
+        "Cute & Romantic",
 
       message:
         state.message ||
@@ -257,9 +298,10 @@
         "published"
     };
 
-    const { error } = await sb
-      .from("wishes")
-      .insert(row);
+    const { error } =
+      await sb
+        .from("wishes")
+        .insert(row);
 
     if (error) {
       throw new Error(
@@ -268,7 +310,8 @@
     }
 
     return {
-      share_token: shareToken
+      share_token:
+        shareToken
     };
   }
 
@@ -277,23 +320,33 @@
       `${location.origin}${location.pathname}?wish=${encodeURIComponent(token)}`;
 
     let modal =
-      document.getElementById("wishlyShareModal");
+      document.getElementById(
+        "wishlyShareModal"
+      );
 
     if (!modal) {
-      modal = document.createElement("div");
-      modal.id = "wishlyShareModal";
+      modal =
+        document.createElement("div");
+
+      modal.id =
+        "wishlyShareModal";
 
       modal.innerHTML = `
         <div class="wishlyShareBackdrop"></div>
 
         <div class="wishlyShareCard">
 
-          <div class="wishlyShareIcon">✨</div>
+          <div class="wishlyShareIcon">
+            ✨
+          </div>
 
-          <h2>Your Wishly is ready!</h2>
+          <h2>
+            Your Wishly is ready!
+          </h2>
 
           <p>
-            Your share link has been created successfully.
+            Your share link has been
+            created successfully.
           </p>
 
           <input
@@ -351,14 +404,18 @@
           border-radius:30px;
           background:rgba(255,250,253,.97);
           border:1px solid rgba(74,51,65,.1);
-          box-shadow:0 30px 100px rgba(50,25,45,.28);
+          box-shadow:
+            0 30px 100px
+            rgba(50,25,45,.28);
           text-align:center;
           color:#6d4d5d;
         }
 
         .wishlyShareIcon{
           font-size:58px;
-          animation:wishlyFloat 3s ease-in-out infinite;
+          animation:
+            wishlyFloat
+            3s ease-in-out infinite;
         }
 
         .wishlyShareCard h2{
@@ -403,10 +460,12 @@
             );
         }
 
-        .wishlyShareActions button:first-child{
+        .wishlyShareActions
+        button:first-child{
           color:#765a68;
           background:#fff0f5;
-          border:1px solid #f2d4e1;
+          border:
+            1px solid #f2d4e1;
         }
 
         .wishlyCloseShare{
@@ -430,66 +489,86 @@
 
       document.getElementById(
         "wishlyCopyLink"
-      ).onclick = async () => {
+      ).onclick =
+        async () => {
 
-        const input =
-          document.getElementById(
-            "wishlyShareInput"
-          );
-
-        try {
-          await navigator.clipboard.writeText(
-            input.value
-          );
-
-          const button =
+          const input =
             document.getElementById(
-              "wishlyCopyLink"
+              "wishlyShareInput"
             );
 
-          button.textContent = "Copied ✓";
+          try {
 
-          setTimeout(() => {
-            button.textContent = "Copy Link";
-          }, 1400);
+            await navigator.clipboard
+              .writeText(input.value);
 
-        } catch {
-          input.select();
-          document.execCommand("copy");
-        }
-      };
+            const button =
+              document.getElementById(
+                "wishlyCopyLink"
+              );
+
+            button.textContent =
+              "Copied ✓";
+
+            setTimeout(() => {
+              button.textContent =
+                "Copy Link";
+            }, 1400);
+
+          } catch {
+
+            input.select();
+
+            document.execCommand(
+              "copy"
+            );
+          }
+        };
 
       document.getElementById(
         "wishlyOpenLink"
-      ).onclick = () => {
-        window.open(url, "_blank");
-      };
+      ).onclick =
+        () => {
+          window.open(
+            url,
+            "_blank"
+          );
+        };
 
       document.getElementById(
         "wishlyCloseShare"
-      ).onclick = () => {
-        modal.remove();
-      };
+      ).onclick =
+        () => {
+          modal.remove();
+        };
     }
 
     document.getElementById(
       "wishlyShareInput"
     ).value = url;
 
-    modal.style.display = "grid";
+    modal.style.display =
+      "grid";
   }
 
   function installCreatorSave() {
+
     const next =
-      document.getElementById("nextBtn");
+      document.getElementById(
+        "nextBtn"
+      );
 
-    if (!next) return;
-
-    if (next.dataset.wishlyBackendInstalled) {
+    if (
+      !next ||
+      next.dataset
+        .wishlyBackendInstalled
+    ) {
       return;
     }
 
-    next.dataset.wishlyBackendInstalled = "1";
+    next.dataset
+      .wishlyBackendInstalled =
+      "1";
 
     next.addEventListener(
       "click",
@@ -504,8 +583,11 @@
 
         try {
 
-          next.disabled = true;
-          next.textContent = "Saving ✨";
+          next.disabled =
+            true;
+
+          next.textContent =
+            "Saving ✨";
 
           setStatus(
             "Preparing your Wishly…"
@@ -523,7 +605,9 @@
             result.share_token
           );
 
-          next.disabled = false;
+          next.disabled =
+            false;
+
           next.textContent =
             "Preview Experience ✨";
 
@@ -535,12 +619,15 @@
             `❌ ${error.message}`
           );
 
-          next.disabled = false;
+          next.disabled =
+            false;
 
           next.textContent =
             "Preview Experience ✨";
 
-          alert(error.message);
+          alert(
+            error.message
+          );
         }
 
       },
@@ -548,16 +635,17 @@
     );
   }
 
-  function patchRemoteFileSupport() {
+  function patchObjectURLForRemoteFiles() {
+
+    const original =
+      URL.createObjectURL.bind(URL);
 
     if (URL.__wishlyPatched) {
       return;
     }
 
-    URL.__wishlyPatched = true;
-
-    const original =
-      URL.createObjectURL.bind(URL);
+    URL.__wishlyPatched =
+      true;
 
     URL.createObjectURL =
       value => {
@@ -576,11 +664,12 @@
 
   function remoteFile(url) {
 
-    if (!url) return null;
-
-    return {
-      __wishlyRemoteUrl: url
-    };
+    return url
+      ? {
+          __wishlyRemoteUrl:
+            url
+        }
+      : null;
   }
 
   async function loadPublicWish(token) {
@@ -599,13 +688,17 @@
       );
     }
 
-    if (!data || !data.length) {
+    if (
+      !data ||
+      !data.length
+    ) {
       throw new Error(
         "This Wishly link is invalid or unavailable."
       );
     }
 
-    const wish = data[0];
+    const wish =
+      data[0];
 
     state.category =
       wish.category ||
@@ -632,34 +725,54 @@
       "";
 
     state.extras =
-      Array.isArray(wish.extras)
+      Array.isArray(
+        wish.extras
+      )
         ? wish.extras
         : [];
 
     state.photos =
-      [null, null, null, null];
+      [
+        null,
+        null,
+        null,
+        null
+      ];
 
     state.captions =
-      ["", "", "", ""];
+      [
+        "",
+        "",
+        "",
+        ""
+      ];
 
     const memories =
-      Array.isArray(wish.memories)
+      Array.isArray(
+        wish.memories
+      )
         ? wish.memories
         : [];
 
     memories
       .slice(0, 4)
-      .forEach((memory, index) => {
+      .forEach(
+        (m, i) => {
 
-        state.photos[index] =
-          remoteFile(memory.url);
+          state.photos[i] =
+            remoteFile(
+              m.url
+            );
 
-        state.captions[index] =
-          memory.caption || "";
-      });
+          state.captions[i] =
+            m.caption ||
+            "";
+        }
+      );
 
     const custom =
-      wish.custom_slide || {};
+      wish.custom_slide ||
+      {};
 
     state.customImage =
       remoteFile(
@@ -667,13 +780,16 @@
       );
 
     state.customTitle =
-      custom.title || "";
+      custom.title ||
+      "";
 
     state.customSmall =
-      custom.small || "";
+      custom.small ||
+      "";
 
     state.customAnimation =
-      custom.animation || "Float";
+      custom.animation ||
+      "Float";
 
     state.finalImage =
       remoteFile(
@@ -690,29 +806,55 @@
         ? "custom"
         : "none";
 
-    state.blown = false;
-    state.expIndex = 0;
+    state.blown =
+      false;
 
-    patchRemoteFileSupport();
+    state.expIndex =
+      0;
+
+    patchObjectURLForRemoteFiles();
 
     const home =
-      document.getElementById("home");
+      document.getElementById(
+        "home"
+      );
 
     const creator =
-      document.getElementById("creator");
+      document.getElementById(
+        "creator"
+      );
+
+    const experience =
+      document.getElementById(
+        "experience"
+      );
 
     if (home) {
-      home.style.display = "none";
+      home.style.display =
+        "none";
     }
 
     if (creator) {
-      creator.classList.remove("active");
+      creator.classList.remove(
+        "active"
+      );
     }
+
+    if (experience) {
+      experience.classList.add(
+        "active"
+      );
+    }
+
+    document.body.style.overflow =
+      "hidden";
 
     await waitFor(
       () =>
-        typeof renderExperience === "function" &&
-        typeof showExpSlide === "function"
+        typeof renderExperience ===
+          "function" &&
+        typeof showExpSlide ===
+          "function"
     );
 
     renderExperience();
@@ -728,7 +870,8 @@
     await waitFor(
       () =>
         window.supabase &&
-        typeof window.supabase.createClient ===
+        typeof window.supabase
+          .createClient ===
           "function"
     );
 
@@ -738,7 +881,7 @@
         SUPABASE_KEY
       );
 
-    patchRemoteFileSupport();
+    patchObjectURLForRemoteFiles();
 
     const token =
       new URLSearchParams(
@@ -765,7 +908,9 @@
           `❌ ${error.message}`
         );
 
-        alert(error.message);
+        alert(
+          error.message
+        );
       }
 
       return;
@@ -775,21 +920,30 @@
   }
 
   const script =
-    document.createElement("script");
+    document.createElement(
+      "script"
+    );
 
   script.src =
     "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 
-  script.onload = () => {
-    boot().catch(console.error);
-  };
+  script.onload =
+    () => {
+      boot()
+        .catch(
+          console.error
+        );
+    };
 
-  script.onerror = () => {
-    setStatus(
-      "❌ Could not load Supabase."
-    );
-  };
+  script.onerror =
+    () => {
+      setStatus(
+        "❌ Could not load Supabase."
+      );
+    };
 
-  document.head.appendChild(script);
+  document.head.appendChild(
+    script
+  );
 
 })();
