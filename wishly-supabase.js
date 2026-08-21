@@ -14,33 +14,22 @@
 
   const waitFor = (fn, tries = 100) => new Promise((resolve, reject) => {
     let n = 0;
-
     const tick = () => {
       try {
         const value = fn();
         if (value) return resolve(value);
       } catch (_) {}
-
-      if (++n >= tries) {
-        return reject(
-          new Error("Wishly frontend did not finish loading.")
-        );
-      }
-
+      if (++n >= tries) return reject(new Error("Wishly frontend did not finish loading."));
       setTimeout(tick, 100);
     };
-
     tick();
   });
 
   function setStatus(message, good = false) {
-    let box =
-      document.getElementById("wishlyBackendStatus");
-
+    let box = document.getElementById("wishlyBackendStatus");
     if (!box) {
       box = document.createElement("div");
       box.id = "wishlyBackendStatus";
-
       Object.assign(box.style, {
         position: "fixed",
         left: "50%",
@@ -58,68 +47,42 @@
         textAlign: "center",
         backdropFilter: "blur(14px)"
       });
-
       document.body.appendChild(box);
     }
-
     box.textContent = message;
-    box.style.color =
-      good ? "#47755a" : "#6d4d5d";
+    box.style.color = good ? "#47755a" : "#6d4d5d";
   }
 
   function makeFileName(prefix, file) {
-    const clean =
-      (file?.name || "upload")
-        .replace(/[^a-zA-Z0-9._-]/g, "_");
-
+    const clean = (file?.name || "upload").replace(/[^a-zA-Z0-9._-]/g, "_");
     return `${crypto.randomUUID()}-${prefix}-${clean}`;
   }
 
   async function uploadFile(bucket, file, prefix) {
     if (!file) return null;
 
-    const path =
-      makeFileName(prefix, file);
+    const path = makeFileName(prefix, file);
 
-    const { error } =
-      await sb.storage
-        .from(bucket)
-        .upload(path, file, {
-          contentType:
-            file.type ||
-            "application/octet-stream",
+    const { error } = await sb.storage
+      .from(bucket)
+      .upload(path, file, {
+        contentType: file.type || "application/octet-stream",
+        upsert: false,
+        cacheControl: "31536000"
+      });
 
-          upsert: false,
+    if (error) throw new Error(`${prefix} upload failed: ${error.message}`);
 
-          cacheControl:
-            "31536000"
-        });
-
-    if (error) {
-      throw new Error(
-        `${prefix} upload failed: ${error.message}`
-      );
-    }
-
-    const { data } =
-      sb.storage
-        .from(bucket)
-        .getPublicUrl(path);
-
+    const { data } = sb.storage.from(bucket).getPublicUrl(path);
     return data.publicUrl;
   }
 
   async function saveWish() {
-    if (!sb) {
-      throw new Error(
-        "Supabase is not ready."
-      );
-    }
+    if (!sb) throw new Error("Supabase is not ready.");
 
     readForm();
 
-    const imageFiles =
-      state.photos.filter(Boolean);
+    const imageFiles = state.photos.filter(Boolean);
 
     const totalUploads =
       imageFiles.length +
@@ -131,30 +94,21 @@
 
     const progress = () => {
       done++;
-
-      setStatus(
-        `Saving your Wishly… ${done}/${totalUploads || 1}`
-      );
+      setStatus(`Saving your Wishly… ${done}/${totalUploads || 1}`);
     };
 
     const memories = [];
 
-    for (
-      let i = 0;
-      i < state.photos.length;
-      i++
-    ) {
-      const file =
-        state.photos[i];
+    for (let i = 0; i < state.photos.length; i++) {
+      const file = state.photos[i];
 
       if (!file) continue;
 
-      const url =
-        await uploadFile(
-          IMAGE_BUCKET,
-          file,
-          `memory-${i + 1}`
-        );
+      const url = await uploadFile(
+        IMAGE_BUCKET,
+        file,
+        `memory-${i + 1}`
+      );
 
       progress();
 
@@ -169,12 +123,11 @@
     let finalImageUrl = null;
 
     if (state.finalImage) {
-      finalImageUrl =
-        await uploadFile(
-          IMAGE_BUCKET,
-          state.finalImage,
-          "final"
-        );
+      finalImageUrl = await uploadFile(
+        IMAGE_BUCKET,
+        state.finalImage,
+        "final"
+      );
 
       progress();
     }
@@ -182,12 +135,11 @@
     let customImageUrl = null;
 
     if (state.customImage) {
-      customImageUrl =
-        await uploadFile(
-          IMAGE_BUCKET,
-          state.customImage,
-          "custom"
-        );
+      customImageUrl = await uploadFile(
+        IMAGE_BUCKET,
+        state.customImage,
+        "custom"
+      );
 
       progress();
     }
@@ -195,113 +147,57 @@
     let musicUrl = null;
 
     if (state.musicFile) {
-      musicUrl =
-        await uploadFile(
-          MUSIC_BUCKET,
-          state.musicFile,
-          "music"
-        );
+      musicUrl = await uploadFile(
+        MUSIC_BUCKET,
+        state.musicFile,
+        "music"
+      );
 
       progress();
     }
 
-    const customSlide =
-      state.customImage
-        ? {
-            image_url:
-              customImageUrl,
+    const customSlide = state.customImage
+      ? {
+          image_url: customImageUrl,
+          title: state.customTitle || "",
+          small: state.customSmall || "",
+          animation: state.customAnimation || "Float"
+        }
+      : {};
 
-            title:
-              state.customTitle || "",
-
-            small:
-              state.customSmall || "",
-
-            animation:
-              state.customAnimation ||
-              "Float"
-          }
-        : {};
-
-    const shareToken =
-      crypto
-        .randomUUID()
-        .replaceAll("-", "")
-        .slice(0, 18);
+    const shareToken = crypto
+      .randomUUID()
+      .replaceAll("-", "")
+      .slice(0, 18);
 
     const row = {
-      share_token:
-        shareToken,
-
-      category:
-        state.category ||
-        "Birthday",
-
-      recipient_name:
-        state.name ||
-        "Someone special",
-
+      share_token: shareToken,
+      category: state.category || "Birthday",
+      recipient_name: state.name || "Someone special",
       special_date:
-        document
-          .getElementById("birthday")
-          ?.value ||
-        null,
-
+        document.getElementById("birthday")?.value || null,
       language:
-        document
-          .getElementById("language")
-          ?.value ||
-        "English",
-
-      tone:
-        "Cute & Romantic",
-
-      message:
-        state.message ||
-        "",
-
-      memory_line:
-        state.memoryLine ||
-        "",
-
-      ending_message:
-        state.endingMessage ||
-        "",
-
-      final_title:
-        state.finalTitle ||
-        "",
-
-      extras:
-        Array.isArray(state.extras)
-          ? state.extras
-          : [],
-
-      custom_slide:
-        customSlide,
-
+        document.getElementById("language")?.value || "English",
+      tone: "Cute & Romantic",
+      message: state.message || "",
+      memory_line: state.memoryLine || "",
+      ending_message: state.endingMessage || "",
+      final_title: state.finalTitle || "",
+      extras: Array.isArray(state.extras)
+        ? state.extras
+        : [],
+      custom_slide: customSlide,
       memories,
-
-      final_image_url:
-        finalImageUrl,
-
-      music_url:
-        musicUrl,
-
-      payment_status:
-        "paid",
-
-      amount:
-        0,
-
-      status:
-        "published"
+      final_image_url: finalImageUrl,
+      music_url: musicUrl,
+      payment_status: "paid",
+      amount: 0,
+      status: "published"
     };
 
-    const { error } =
-      await sb
-        .from("wishes")
-        .insert(row);
+    const { error } = await sb
+      .from("wishes")
+      .insert(row);
 
     if (error) {
       throw new Error(
@@ -310,8 +206,7 @@
     }
 
     return {
-      share_token:
-        shareToken
+      share_token: shareToken
     };
   }
 
@@ -320,16 +215,12 @@
       `${location.origin}${location.pathname}?wish=${encodeURIComponent(token)}`;
 
     let modal =
-      document.getElementById(
-        "wishlyShareModal"
-      );
+      document.getElementById("wishlyShareModal");
 
     if (!modal) {
-      modal =
-        document.createElement("div");
+      modal = document.createElement("div");
 
-      modal.id =
-        "wishlyShareModal";
+      modal.id = "wishlyShareModal";
 
       modal.innerHTML = `
         <div class="wishlyShareBackdrop"></div>
@@ -345,8 +236,7 @@
           </h2>
 
           <p>
-            Your share link has been
-            created successfully.
+            Your share link has been created successfully.
           </p>
 
           <input
@@ -404,18 +294,14 @@
           border-radius:30px;
           background:rgba(255,250,253,.97);
           border:1px solid rgba(74,51,65,.1);
-          box-shadow:
-            0 30px 100px
-            rgba(50,25,45,.28);
+          box-shadow:0 30px 100px rgba(50,25,45,.28);
           text-align:center;
           color:#6d4d5d;
         }
 
         .wishlyShareIcon{
           font-size:58px;
-          animation:
-            wishlyFloat
-            3s ease-in-out infinite;
+          animation:wishlyFloat 3s ease-in-out infinite;
         }
 
         .wishlyShareCard h2{
@@ -460,12 +346,10 @@
             );
         }
 
-        .wishlyShareActions
-        button:first-child{
+        .wishlyShareActions button:first-child{
           color:#765a68;
           background:#fff0f5;
-          border:
-            1px solid #f2d4e1;
+          border:1px solid #f2d4e1;
         }
 
         .wishlyCloseShare{
@@ -489,105 +373,80 @@
 
       document.getElementById(
         "wishlyCopyLink"
-      ).onclick =
-        async () => {
+      ).onclick = async () => {
 
-          const input =
+        const input =
+          document.getElementById(
+            "wishlyShareInput"
+          );
+
+        try {
+
+          await navigator.clipboard.writeText(
+            input.value
+          );
+
+          document.getElementById(
+            "wishlyCopyLink"
+          ).textContent = "Copied ✓";
+
+          setTimeout(() => {
             document.getElementById(
-              "wishlyShareInput"
-            );
+              "wishlyCopyLink"
+            ).textContent = "Copy Link";
+          }, 1400);
 
-          try {
+        } catch {
 
-            await navigator.clipboard
-              .writeText(input.value);
+          input.select();
 
-            const button =
-              document.getElementById(
-                "wishlyCopyLink"
-              );
-
-            button.textContent =
-              "Copied ✓";
-
-            setTimeout(() => {
-              button.textContent =
-                "Copy Link";
-            }, 1400);
-
-          } catch {
-
-            input.select();
-
-            document.execCommand(
-              "copy"
-            );
-          }
-        };
+          document.execCommand("copy");
+        }
+      };
 
       document.getElementById(
         "wishlyOpenLink"
-      ).onclick =
-        () => {
-          window.open(
-            url,
-            "_blank"
-          );
-        };
+      ).onclick = () => {
+        window.open(url, "_blank");
+      };
 
       document.getElementById(
         "wishlyCloseShare"
-      ).onclick =
-        () => {
-          modal.remove();
-        };
+      ).onclick = () => modal.remove();
     }
 
     document.getElementById(
       "wishlyShareInput"
     ).value = url;
 
-    modal.style.display =
-      "grid";
+    modal.style.display = "grid";
   }
 
   function installCreatorSave() {
 
     const next =
-      document.getElementById(
-        "nextBtn"
-      );
+      document.getElementById("nextBtn");
 
     if (
       !next ||
-      next.dataset
-        .wishlyBackendInstalled
-    ) {
-      return;
-    }
+      next.dataset.wishlyBackendInstalled
+    ) return;
 
-    next.dataset
-      .wishlyBackendInstalled =
-      "1";
+    next.dataset.wishlyBackendInstalled = "1";
 
     next.addEventListener(
       "click",
-      async event => {
+      async (event) => {
 
-        if (state.step !== 4) {
-          return;
-        }
+        if (state.step !== 4) return;
 
         event.preventDefault();
         event.stopImmediatePropagation();
 
         try {
 
-          next.disabled =
-            true;
-
-          next.textContent =
-            "Saving ✨";
+          next.disabled = true;
+          next.textContent = "Saving ✨";
 
           setStatus(
             "Preparing your Wishly…"
@@ -596,18 +455,23 @@
           const result =
             await saveWish();
 
-          setStatus(
-            "Wishly saved successfully ✨",
-            true
-          );
+          /*
+            Remove backend status immediately.
+            The creator page does not need the
+            floating status pill after saving.
+          */
+          const status =
+            document.getElementById(
+              "wishlyBackendStatus"
+            );
+
+          if (status) status.remove();
 
           showShareLink(
             result.share_token
           );
 
-          next.disabled =
-            false;
-
+          next.disabled = false;
           next.textContent =
             "Preview Experience ✨";
 
@@ -619,15 +483,12 @@
             `❌ ${error.message}`
           );
 
-          next.disabled =
-            false;
+          next.disabled = false;
 
           next.textContent =
             "Preview Experience ✨";
 
-          alert(
-            error.message
-          );
+          alert(error.message);
         }
 
       },
@@ -640,47 +501,44 @@
     const original =
       URL.createObjectURL.bind(URL);
 
-    if (URL.__wishlyPatched) {
-      return;
-    }
+    if (URL.__wishlyPatched) return;
 
-    URL.__wishlyPatched =
-      true;
+    URL.__wishlyPatched = true;
 
-    URL.createObjectURL =
-      value => {
+    URL.createObjectURL = value => {
 
-        if (
-          value &&
-          typeof value === "object" &&
-          value.__wishlyRemoteUrl
-        ) {
-          return value.__wishlyRemoteUrl;
-        }
+      if (
+        value &&
+        typeof value === "object" &&
+        value.__wishlyRemoteUrl
+      ) {
+        return value.__wishlyRemoteUrl;
+      }
 
-        return original(value);
-      };
+      return original(value);
+    };
   }
 
   function remoteFile(url) {
 
     return url
       ? {
-          __wishlyRemoteUrl:
-            url
+          __wishlyRemoteUrl: url
         }
       : null;
   }
 
   async function loadPublicWish(token) {
 
-    const { data, error } =
-      await sb.rpc(
-        "get_wish_by_token",
-        {
-          token
-        }
-      );
+    const {
+      data,
+      error
+    } = await sb.rpc(
+      "get_wish_by_token",
+      {
+        token
+      }
+    );
 
     if (error) {
       throw new Error(
@@ -688,108 +546,74 @@
       );
     }
 
-    if (
-      !data ||
-      !data.length
-    ) {
+    if (!data || !data.length) {
       throw new Error(
         "This Wishly link is invalid or unavailable."
       );
     }
 
-    const wish =
-      data[0];
+    const wish = data[0];
 
     state.category =
-      wish.category ||
-      "Birthday";
+      wish.category || "Birthday";
 
     state.name =
       wish.recipient_name ||
       "Someone special";
 
     state.message =
-      wish.message ||
-      "";
+      wish.message || "";
 
     state.memoryLine =
-      wish.memory_line ||
-      "";
+      wish.memory_line || "";
 
     state.endingMessage =
-      wish.ending_message ||
-      "";
+      wish.ending_message || "";
 
     state.finalTitle =
-      wish.final_title ||
-      "";
+      wish.final_title || "";
 
     state.extras =
-      Array.isArray(
-        wish.extras
-      )
+      Array.isArray(wish.extras)
         ? wish.extras
         : [];
 
     state.photos =
-      [
-        null,
-        null,
-        null,
-        null
-      ];
+      [null, null, null, null];
 
     state.captions =
-      [
-        "",
-        "",
-        "",
-        ""
-      ];
+      ["", "", "", ""];
 
     const memories =
-      Array.isArray(
-        wish.memories
-      )
+      Array.isArray(wish.memories)
         ? wish.memories
         : [];
 
     memories
       .slice(0, 4)
-      .forEach(
-        (m, i) => {
+      .forEach((m, i) => {
 
-          state.photos[i] =
-            remoteFile(
-              m.url
-            );
+        state.photos[i] =
+          remoteFile(m.url);
 
-          state.captions[i] =
-            m.caption ||
-            "";
-        }
-      );
+        state.captions[i] =
+          m.caption || "";
+      });
 
     const custom =
-      wish.custom_slide ||
-      {};
+      wish.custom_slide || {};
 
     state.customImage =
-      remoteFile(
-        custom.image_url
-      );
+      remoteFile(custom.image_url);
 
     state.customTitle =
-      custom.title ||
-      "";
+      custom.title || "";
 
     state.customSmall =
-      custom.small ||
-      "";
+      custom.small || "";
 
     state.customAnimation =
-      custom.animation ||
-      "Float";
+      custom.animation || "Float";
 
     state.finalImage =
       remoteFile(
@@ -806,48 +630,24 @@
         ? "custom"
         : "none";
 
-    state.blown =
-      false;
-
-    state.expIndex =
-      0;
+    state.blown = false;
+    state.expIndex = 0;
 
     patchObjectURLForRemoteFiles();
 
     const home =
-      document.getElementById(
-        "home"
-      );
+      document.getElementById("home");
 
     const creator =
-      document.getElementById(
-        "creator"
-      );
-
-    const experience =
-      document.getElementById(
-        "experience"
-      );
+      document.getElementById("creator");
 
     if (home) {
-      home.style.display =
-        "none";
+      home.style.display = "none";
     }
 
     if (creator) {
-      creator.classList.remove(
-        "active"
-      );
+      creator.classList.remove("active");
     }
-
-    if (experience) {
-      experience.classList.add(
-        "active"
-      );
-    }
-
-    document.body.style.overflow =
-      "hidden";
 
     await waitFor(
       () =>
@@ -859,10 +659,20 @@
 
     renderExperience();
 
-    setStatus(
-      "Enjoy your Wishly ✨",
-      true
-    );
+    /*
+      IMPORTANT:
+      Do NOT show the temporary
+      "Enjoy your Wishly ✨" status pill
+      on the public experience page.
+    */
+    const status =
+      document.getElementById(
+        "wishlyBackendStatus"
+      );
+
+    if (status) {
+      status.remove();
+    }
   }
 
   async function boot() {
@@ -871,8 +681,7 @@
       () =>
         window.supabase &&
         typeof window.supabase
-          .createClient ===
-          "function"
+          .createClient === "function"
     );
 
     sb =
@@ -892,13 +701,12 @@
 
       try {
 
-        setStatus(
-          "Opening your Wishly…"
-        );
-
-        await loadPublicWish(
-          token
-        );
+        /*
+          Don't create a visible
+          "Enjoy your Wishly" status.
+          Load the experience directly.
+        */
+        await loadPublicWish(token);
 
       } catch (error) {
 
@@ -908,9 +716,7 @@
           `❌ ${error.message}`
         );
 
-        alert(
-          error.message
-        );
+        alert(error.message);
       }
 
       return;
@@ -919,31 +725,24 @@
     installCreatorSave();
   }
 
+  /*
+    Load Supabase JS without changing
+    the existing Wishly HTML.
+  */
   const script =
-    document.createElement(
-      "script"
-    );
+    document.createElement("script");
 
   script.src =
     "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 
-  script.onload =
-    () => {
-      boot()
-        .catch(
-          console.error
-        );
-    };
+  script.onload = () =>
+    boot().catch(console.error);
 
-  script.onerror =
-    () => {
-      setStatus(
-        "❌ Could not load Supabase."
-      );
-    };
+  script.onerror = () =>
+    setStatus(
+      "❌ Could not load Supabase."
+    );
 
-  document.head.appendChild(
-    script
-  );
+  document.head.appendChild(script);
 
 })();
